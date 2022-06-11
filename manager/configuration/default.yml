@@ -1,0 +1,27 @@
+Port: "${PORT}"
+Mode: "${GIN_MODE}"
+Extractor: "${EXTRACTOR_LIMIT}"
+Fetcher: "${FETCHER_LIMIT}"
+Feeder: "${FEEDER_LIMIT}"
+Database:
+  Host: "${TELUNJUK_DB_HOST}"
+  DbName: "${TELUNJUK_DB_NAME}"
+Broker:
+  Host: "${BROKER_HOST}"
+  HttpPort: "${BROKER_HTTP_PORT}"
+  User: "${BROKER_USER}"
+  Password: "${BROKER_PASSWORD}"
+Cors:
+  AllowOrigins: ['*']
+  AllowMethods: ["GET", "POST", "PUT","PATCH"]
+  AllowHeaders:
+    [
+  #    "Origin",
+      "Authorization",
+      "Content-Type",
+      "Access-Control-Allow-Origin",
+      "Access-Control-Allow-Headers",
+    ]
+  AllowCredentials: True
+  AllowWildcard: True
+  MaxAge: 120

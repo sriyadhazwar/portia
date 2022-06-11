@@ -1,0 +1,234 @@
+{
+  "job": {
+    "total_product": 0,
+    "total_processed": 0,
+    "_id": "5f8698371bc47392d0380342",
+    "name": "Shopee RUN",
+    "url": "https://shopee.co.id/Mesin-Jahit-cat.121.10013.12210",
+    "driver_id": "5f8697fc1bc47392d0380341",
+    "created_at": "2020-10-14T06:18:31.828Z",
+    "status": "waiting",
+    "__v": 0
+  },
+  "driver": {
+    "_id": "5f8697fc1bc47392d0380341",
+    "site_id": 507,
+    "name": "Shopee - Category",
+    "url": "https://shopee.co.id/",
+    "type": "api",
+    "use_proxy": false,
+    "proxy_credential": "false",
+    "deep_crawl": true,
+    "headers": {
+      "accept": "/",
+      "cache-control": "no-cache",
+      "accept-encoding": "gzip, deflate, br",
+      "accept-language": "en-GB,en-US;q=0.9,en;q=0.8,id;q=0.7,ms;q=0.6,su;q=0.5",
+      "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36",
+      "if-none-match-": "none"
+    },
+    "use_lazy": false,
+    "definition": {
+      "entry_point": {
+        "type": "api",
+        "api": {
+          "name": "CONTENT_PRODUCT",
+          "url": "https://shopee.co.id/api/v4/search/search_items?page_type=search&by=relevancy&match_id={{CATEGORY_ID}}&limit={{PAGE_SIZE}}&newest={{PAGE_OFFSET}}&version=2&order=desc&price_min={{PRICE_MIN}}&price_max={{PRICE_MAX}}&ratingFilter=4&sortBy=sales",
+          "method": "GET",
+          "headers": null,
+          "value": {
+            "path": "$.items.*",
+            "format": "https://shopee.co.id/{{PRODUCT_NAME_SLUGIFY}}-i.{{SHOP_ID}}.{{PRODUCT_ID}}",
+            "save_content": true,
+            "vars": {
+              "PRODUCT_NAME_SLUGIFY": "$.item_basic.name",
+              "SHOP_ID": "$.shopid",
+              "PRODUCT_ID": "$.itemid"
+            }
+          }
+        },
+        "page_max": 100,
+        "throttle": 100,
+        "deep_crawl": {
+          "price_min": 0,
+          "price_max": 0,
+          "price_increment": 10000000,
+          "batch_threshold": 5000,
+          "minimum_price_range": 10,
+          "product_count_path": "$.total_count"
+        }
+      },
+      "product": {
+        "type": "api",
+        "api": [
+          {
+            "name": "CONTENT_STORE",
+            "url": "https://shopee.co.id/api/v2/shop/get?is_brief=1&shopid={{STORE_ID}}",
+            "method": "GET",
+            "headers": null,
+            "value": {
+              "path": "$"
+            }
+          }
+        ],
+        "throttle": 100
+      },
+      "product_map": [
+        {
+          "name": "title",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item_basic.name"
+        },
+        {
+          "name": "brand",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item_basic.brand"
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item_basic.price",
+          "value": "{{VALUE}}/100000"
+        },
+        {
+          "name": "price_original",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item_basic.price_before_discount",
+          "value": "{{VALUE}}/100000"
+        },
+        {
+          "name": "breadcrumb",
+          "type": "array",
+          "default": [
+            "DEFAULT_BREADCRUMB"
+          ]
+        },
+        {
+          "name": "breadcrumb_id",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item_basic.catid"
+        },
+        {
+          "name": "image_primary",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item_basic.images[0]",
+          "value": "https://cf.shopee.co.id/file/{{VALUE}}"
+        },
+        {
+          "name": "total_sold",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item_basic.historical_sold"
+        },
+        {
+          "name": "total_sold_2",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item_basic.sold"
+        },
+        {
+          "name": "total_stock",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item_basic.stock"
+        },
+        {
+          "name": "total_review",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item_basic.cmt_count"
+        },
+        {
+          "name": "rating",
+          "type": "decimal",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item_basic.item_rating.rating_star"
+        },
+        {
+          "name": "seller_name",
+          "source": "CONTENT_STORE",
+          "path": "$.data.name"
+        },
+        {
+          "name": "seller_location",
+          "source": "CONTENT_STORE",
+          "path": "$.data.shop_location"
+        },
+        {
+          "name": "seller_rating",
+          "type": "decimal",
+          "source": "CONTENT_STORE",
+          "path": "$.data.account.total_avg_star"
+        },
+        {
+          "name": "seller_is_official",
+          "type": "boolean",
+          "source": "CONTENT_STORE",
+          "path": "$.data.is_official_shop"
+        }
+      ],
+      "vars": [
+        {
+          "name": "CATEGORY_ID",
+          "type": "regex",
+          "input": "{{URL}}",
+          "value": "shopee\\.co\\.id.*\\.(\\d+)",
+          "args": {
+            "group": 1
+          }
+        },
+        {
+          "name": "STORE_ID",
+          "type": "regex",
+          "input": "{{URL_PRODUCT}}",
+          "value": "shopee\\.co\\.id.*-i\\.(\\d*)\\.\\d*",
+          "args": {
+            "group": 1
+          }
+        },
+        {
+          "name": "PRODUCT_ID",
+          "type": "regex",
+          "input": "{{URL_PRODUCT}}",
+          "value": "shopee\\.co\\.id.*-i\\.\\d*\\.(\\d*)",
+          "args": {
+            "group": 1
+          }
+        },
+        {
+          "name": "PRICE_MIN",
+          "type": "constant",
+          "value": "5000001"
+        },
+        {
+          "name": "PRICE_MAX",
+          "type": "constant",
+          "value": "10000000"
+        },
+        {
+          "name": "PAGE_NUMBER",
+          "type": "constant",
+          "value": 3
+        }
+      ]
+    }
+  },
+  "product": {
+    "url": "https://shopee.co.id/TERMURAH-MESIN-JAHIT-KARUNG-NEWLONG-NP-7A-NP7A-JAPAN-PORTABLE-BAG-CLOSER-i.165699761.9918315805",
+    "contents": [
+      {
+        "content": "{\"item_basic\":{\"itemid\":9918315805,\"shopid\":165699761,\"name\":\"TERMURAH MESIN JAHIT KARUNG NEWLONG NP-7A / NP7A JAPAN PORTABLE BAG CLOSER\",\"label_ids\":null,\"image\":\"9103964166433d156692111523af318c\",\"images\":[\"9103964166433d156692111523af318c\",\"c82c2b77d9bd0a8df71134ca79465517\",\"ad3f00321e336df0fdf44582db3f9947\",\"af534d5ea534b2aa45eb88f8a1600939\",\"f739a396941ad67535bf09a6308adde6\"],\"currency\":\"IDR\",\"stock\":182,\"status\":1,\"ctime\":1614346293,\"sold\":0,\"historical_sold\":0,\"liked\":false,\"liked_count\":0,\"view_count\":0,\"catid\":121,\"brand\":\"Tidak Ada Merek\",\"cmt_count\":0,\"flag\":0,\"cb_option\":0,\"item_status\":\"normal\",\"price\":673200000000,\"price_min\":673200000000,\"price_max\":673200000000,\"price_min_before_discount\":-1,\"price_max_before_discount\":-1,\"hidden_price_display\":null,\"price_before_discount\":0,\"has_lowest_price_guarantee\":false,\"show_discount\":0,\"raw_discount\":0,\"discount\":null,\"is_category_failed\":false,\"size_chart\":null,\"video_info_list\":null,\"tier_variations\":[{\"name\":\"\",\"options\":[\"\"],\"images\":null,\"properties\":[],\"type\":0}],\"item_rating\":{\"rating_star\":0,\"rating_count\":[0,0,0,0,0,0],\"rcount_with_context\":0,\"rcount_with_image\":0},\"item_type\":0,\"reference_item_id\":\"\",\"transparent_background_image\":\"\",\"is_adult\":false,\"badge_icon_type\":0,\"shopee_verified\":false,\"is_official_shop\":false,\"show_official_shop_label\":false,\"show_shopee_verified_label\":false,\"show_official_shop_label_in_title\":false,\"is_cc_installment_payment_eligible\":false,\"is_non_cc_installment_payment_eligible\":false,\"coin_earn_label\":null,\"show_free_shipping\":false,\"preview_info\":null,\"coin_info\":null,\"exclusive_price_info\":null,\"bundle_deal_id\":0,\"can_use_bundle_deal\":false,\"bundle_deal_info\":null,\"is_group_buy_item\":null,\"has_group_buy_stock\":null,\"group_buy_info\":null,\"welcome_package_type\":0,\"welcome_package_info\":null,\"add_on_deal_info\":null,\"can_use_wholesale\":false,\"is_preferred_plus_seller\":false,\"shop_location\":\"KOTA JAKARTA BARAT\",\"has_model_with_available_shopee_stock\":false,\"voucher_info\":null,\"can_use_cod\":false,\"is_on_flash_sale\":false},\"adsid\":null,\"campaignid\":null,\"distance\":null,\"match_type\":null,\"ads_keyword\":null,\"deduction_info\":null,\"collection_id\":null,\"display_name\":null,\"campaign_stock\":null,\"json_data\":\"\",\"tracking_info\":{\"viral_spu_tracking\":null,\"business_tracking\":null,\"multi_search_tracking\":[0],\"groupid\":0,\"ruleid\":[0]},\"itemid\":9918315805,\"shopid\":165699761,\"algo_image\":null}",
+        "name": "CONTENT_PRODUCT",
+        "type": "json"
+      },
+      {
+        "name": "CONTENT_STORE",
+        "content": "{\"version\":\"c77c71f388d7bd1bc3c4b5ab5cf69a84\",\"data\":{\"campaign_config\":null,\"rating_normal\":0,\"followed\":null,\"userid\":165701986,\"shopid\":165699761,\"show_official_shop_label_in_normal_position\":null,\"rating_bad\":0,\"mtime\":1614360522,\"is_preferred_plus_seller\":false,\"has_decoration\":null,\"is_shopee_verified\":false,\"cancellation_rate\":0,\"is_official_shop\":false,\"vacation\":false,\"show_low_fulfillment_warning\":false,\"item_count\":497,\"is_ab_test\":false,\"preparation_time\":null,\"follower_count\":0,\"cb_option\":0,\"shop_location\":\"KOTA JAKARTA BARAT\",\"enable_display_unitno\":null,\"status\":1,\"show_new_arrival_items\":true,\"is_blocking_owner\":null,\"description\":null,\"rating_good\":0,\"is_semi_inactive\":null,\"has_in_shop_flash_sale\":false,\"show_official_shop_label\":false,\"shop_covers\":null,\"show_official_shop_label_in_title\":false,\"campaign_id\":0,\"buyer_rating\":null,\"chat_disabled\":false,\"show_live_tab\":false,\"response_time\":null,\"ctime\":1564121493,\"account\":{\"username\":\"gabrielaclara_seller\",\"status\":1,\"following_count\":1,\"hide_likes\":0,\"email_verified\":false,\"fbid\":\"\",\"total_avg_star\":null,\"phone_verified\":true,\"feed_account_info\":{\"can_post_feed\":true,\"is_kol\":null},\"portrait\":\"32d064b26d513971edefb59bbebd83d5\",\"is_seller\":true},\"response_rate\":57,\"disable_make_offer\":1,\"name\":\"gabrielaclara_seller\",\"rating_star\":null,\"country\":\"ID\",\"show_shopee_verified_label\":false,\"cover\":\"\",\"has_shopee_flash_sale\":false,\"place\":\"KOTA JAKARTA BARAT - KALIDERES, DKI JAKARTA, ID\",\"new_arrival_items_start_ts\":1614009600,\"has_flash_sale\":false,\"last_active_time\":1615189011,\"real_url_if_matching_custom_url\":null,\"has_brand_sale\":false},\"error_msg\":null,\"error\":0}",
+        "type": "json"
+      }
+    ]
+  }
+}

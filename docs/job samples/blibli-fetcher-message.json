@@ -1,0 +1,184 @@
+{
+  "job": {
+    "total_product": 0,
+    "total_processed": 0,
+    "_id": "5f8698371bc47392d0380344",
+    "name": "Blibli RUN",
+    "url": "https://www.blibli.com/c/3/nursing-cover-bantal-menyusui/BA-1000053/55076",
+    "driver_id": "5f8697fc1bc47392d0380343",
+    "created_at": "2021-01-19T06:18:31.828Z",
+    "status": "waiting",
+    "__v": 0,
+    "root": false
+  },
+  "driver": {
+    "_id": "5f8697fc1bc47392d0380343",
+    "site_id": 38,
+    "name": "Blibli - Category",
+    "url": "https://blibli.com/",
+    "type": "api",
+    "use_proxy": false,
+    "proxy_credential": "false",
+    "deep_crawl": true,
+    "use_lazy": false,
+    "definition": {
+      "entry_point": {
+        "type": "api",
+        "api": {
+          "url": "https://www.blibli.com/backend/search/products?page={{PAGE_NUMBER}}&start={{PAGE_OFFSET}}&category={{CATEGORY_ID}}&sort=7&intent=false&rating=4&minPrice={{PRICE_MIN}}&maxPrice={{PRICE_MAX}}&channelId=web&showFacet=true",
+          "method": "GET",
+          "headers": null,
+          "value": {
+            "path": "$.data.products.*",
+            "format": "https://blibli.com/p/{{PRODUCT_NAME_SLUGIFY}}/{{PRODUCT_ID}}?",
+            "vars": {
+              "PRODUCT_NAME_SLUGIFY": "$.name",
+              "PRODUCT_ID": "$.formattedId"
+            }
+          }
+        },
+        "page_max": 20,
+        "throttle": 100,
+        "deep_crawl": {
+          "price_min": 0,
+          "price_max": 0,
+          "price_increment": 200000,
+          "batch_threshold": 800,
+          "minimum_price_range": 10,
+          "product_count_path": "$.paging.total_item"
+        }
+      },
+      "product": {
+        "type": "api",
+        "api": [
+          {
+            "name": "CONTENT_PRODUCT",
+            "url": "https://www.blibli.com/backend/product-detail/products/{{PRODUCT_ID}}/_summary",
+            "method": "GET",
+            "headers": null,
+            "value": {
+              "path": "$"
+            }
+          }
+        ],
+        "throttle": 100
+      },
+      "product_map": [
+        {
+          "name": "sku",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.itemSku"
+        },
+        {
+          "name": "title",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.name"
+        },
+        {
+          "name": "brand",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.brand.name"
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.price.offered",
+          "value": "{{VALUE}}"
+        },
+        {
+          "name": "price_original",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.price.listed",
+          "value": "{{VALUE}}"
+        },
+        {
+          "name": "breadcrumb",
+          "type": "array",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.categories.*.name"
+        },
+        {
+          "name": "image_primary",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.images[0].full",
+          "value": "{{VALUE}}"
+        },
+        {
+          "name": "total_stock",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.stock"
+        },
+        {
+          "name": "total_review",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.review.count"
+        },
+        {
+          "name": "rating",
+          "type": "decimal",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.review.decimalRating"
+        },
+        {
+          "name": "seller_name",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.merchant.name"
+        },
+        {
+          "name": "seller_location",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.merchant.location"
+        },
+        {
+          "name": "seller_rating",
+          "type": "decimal",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.merchant.rating.value"
+        },
+        {
+          "name": "seller_is_official",
+          "type": "boolean",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.merchant.official"
+        }
+      ],
+      "vars": [
+        {
+          "name": "CATEGORY_ID",
+          "type": "regex",
+          "input": "{{URL}}",
+          "value": "blibli\\.com.*\\/\\w\\/\\d\\/.+\\/(.+)\\/(.+)",
+          "args": {
+            "group": 1
+          }
+        },
+        {
+          "name": "PRODUCT_ID",
+          "type": "regex",
+          "input": "{{URL_PRODUCT}}",
+          "value": "blibli\\.com/\\w/.+\\/(.+)",
+          "args": {
+            "group": 1
+          }
+        },
+        {
+          "name": "PAGE_SIZE",
+          "type": "constant",
+          "value": "40"
+        },
+        {
+          "name": "PAGE_NUMBER",
+          "type": "constant",
+          "value": 2
+        }
+      ]
+    }
+  },
+  "product": {
+    "url": "https://blibli.com/p/Snobby-Zoo-Series-TPB3023-Bantal-Ibu-Menyusui/ps--DIB-15040-00403"
+  }
+}

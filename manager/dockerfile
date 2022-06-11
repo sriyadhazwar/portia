@@ -1,0 +1,13 @@
+# build stage
+FROM golang:alpine AS build-env
+RUN apk --no-cache add build-base git gcc
+ADD . /src
+RUN cd /src && go build -o telunjuk-manager
+
+# final stage
+FROM alpine
+WORKDIR /app
+COPY --from=build-env /src/telunjuk-manager /app/
+COPY --from=build-env /src/configuration/debug.yml /app/configuration/
+COPY --from=build-env /src/configuration/config /app/configuration/config
+ENTRYPOINT ./telunjuk-manager

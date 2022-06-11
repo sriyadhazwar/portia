@@ -1,0 +1,77 @@
+[
+      {
+        "name": "id",
+        "type": "INTEGER",
+        "mode": "REQUIRED"
+      },
+      {
+        "name": "code",
+        "type": "STRING",
+        "mode": "REQUIRED"
+      },
+      {
+        "name": "name",
+        "type": "STRING",
+        "mode": "REQUIRED"
+      },
+      {
+        "name": "company",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "category_id",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "alias",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "exclude",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "exclude_category",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "filter_category",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "use_global_word_alias",
+        "type": "BOOLEAN",
+        "mode": "REQUIRED"
+      },
+      {
+        "name": "use_as_mapping",
+        "type": "BOOLEAN",
+        "mode": "REQUIRED"
+      },
+      {
+        "name": "source",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "created_at",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "updated_at",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "deleted_at",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE"
+      }
+    ]

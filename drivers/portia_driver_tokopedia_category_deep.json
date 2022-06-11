@@ -1,0 +1,182 @@
+{
+  "_id": "5f8697fc1bc47392d0380342",
+  "site_id": 24,
+  "name": "Tokopedia Category",
+  "url": "https://www.tokopedia.com",
+  "type": "api",
+  "use_cookie": false,
+  "use_proxy": false,
+  "proxy": null,
+  "deep_crawl": true,
+  "headers": {
+    "Accept-Charset": "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
+    "Accept": "*/*",
+    "Cache-Control": "no-cache",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8,id;q=0.7,ms;q=0.6,su;q=0.5",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+  },
+  "use_lazy": false,
+  "definition": {
+    "entry_point": {
+      "type": "api",
+      "api": {
+        "name": "CONTENT_PRODUCT",
+        "url": "https://gql.tokopedia.com/",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "operationName": "SearchProductQuery",
+          "variables": {
+            "params": "sc={{CATEGORY_ID}}&pmin={{PRICE_MIN}}&pmax={{PRICE_MAX}}&identifier={{CATEGORY_IDENTIFIER}}&st=product&related=true&start={{PAGE_OFFSET}}&page={{PAGE_NUMBER}}&rows={{PAGE_SIZE}}&source=directory&device=desktop&safe_search=false&rt=4,5"
+          },
+          "query": "query SearchProductQuery($params: String) { CategoryProducts: searchProduct(params: $params) { totalData: count data: products { id url condition category_id count_review discount_percentage is_preorder name price original_price rating image_url shop { id url name is_power_badge is_official reputation clover location __typename } labelGroups: label_groups { position title type __typename } __typename } __typename } }"
+        },
+        "value": {
+          "path": "$.data.CategoryProducts.data.*",
+          "format": "{{PRODUCT_URL}}",
+          "save_content": true,
+          "vars": {
+            "PRODUCT_URL": "$.url"
+          }
+        }
+      },
+      "page_max": 100,
+      "throttle": 3000,
+      "product_count_path": "$.data.CategoryProducts.totalData",
+      "deep_crawl": {
+        "price_min": 0,
+        "price_max": 0,
+        "price_increment": 10000000,
+        "batch_threshold": 6000,
+        "minimum_price_range": 10,
+        "product_count_path": "$.data.CategoryProducts.totalData"
+      },
+      "vars": [
+        {
+          "name": "CATEGORY_IDENTIFIER",
+          "type": "regex",
+          "input": "{{URL}}",
+          "value": "www\\.tokopedia\\.com/p/(.*)",
+          "func": "'{{VALUE}}'.replace(/\\//g,'_')"
+        },
+        {
+          "name": "CATEGORY_ID",
+          "type": "api",
+          "async": true,
+          "value": "$",
+          "api": {
+            "url": "https://gql.tokopedia.com/",
+            "method": "POST",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "variables": {
+                "identifier": "{{CATEGORY_IDENTIFIER}}",
+                "safeSearch": false,
+                "intermediary": true
+              },
+              "query": "query CategoryDetailQuery($identifier: String!, $intermediary: Boolean!, $safeSearch: Boolean!) {\n CategoryDetailQuery: CategoryDetailQueryV3(identifier: $identifier, intermediary: $intermediary, safeSearch: $safeSearch) {\n header {\n code\n serverProcessTime\n message\n __typename\n }\n data {\n id\n name\n useDiscoPage\n discoIdentifier\n url\n child {\n id\n name\n url\n thumbnailImage\n isAdult\n applinks\n __typename\n }\n __typename\n }\n __typename\n }\n}\n",
+              "operationName": "CategoryDetailQuery"
+            },
+            "value": {
+              "path": "$.data.CategoryDetailQuery.data.id"
+            }
+          }
+        }
+      ]
+    },
+    "product": {
+      "type": "api",
+      "api": []
+    },
+    "vars": [
+      {
+        "name": "PAGE_SIZE",
+        "type": "constant",
+        "value": "60"
+      }
+    ],
+    "product_map": [
+      {
+        "name": "title",
+        "source": "CONTENT_PRODUCT",
+        "path": "$.name"
+      },
+      {
+        "name": "price",
+        "type": "number",
+        "source": "CONTENT_PRODUCT",
+        "path": "$.price",
+        "value": "'{{VALUE}}'.replace(/[^\\d,]/g,'')"
+      },
+      {
+        "name": "price_original",
+        "type": "number",
+        "source": "CONTENT_PRODUCT",
+        "path": "$.original_price",
+        "value": "'{{VALUE}}'.replace(/[^\\d,]/g,'')"
+      },
+      {
+        "name": "image_primary",
+        "source": "CONTENT_PRODUCT",
+        "path": "$.image_url"
+      },
+      {
+        "name": "total_sold",
+        "type": "number",
+        "source": "CONTENT_PRODUCT",
+        "path": "$.labelGroups[?(@.position == 'integrity')].title",
+        "value": "('{{VALUE}}'.replace(/[^\\d,]/g,'').replace(',','.')) * (('{{VALUE}}'.includes('rb') ? 1000 : ('{{VALUE}}'.includes('jt') ? 1000000 : 1)))"
+      },
+      {
+        "name": "total_review",
+        "type": "number",
+        "source": "CONTENT_PRODUCT",
+        "path": "$.count_review"
+      },
+      {
+        "name": "rating",
+        "type": "decimal",
+        "source": "CONTENT_PRODUCT",
+        "path": "$.rating"
+      },
+      {
+        "name": "is_new",
+        "type": "boolean",
+        "source": "CONTENT_PRODUCT",
+        "path": "$.condition",
+        "value": "('{{VALUE}}' == 1)"
+      },
+      {
+        "name": "seller_name",
+        "source": "CONTENT_PRODUCT",
+        "path": "$.shop.name"
+      },
+      {
+        "name": "seller_location",
+        "source": "CONTENT_PRODUCT",
+        "path": "$.shop.location"
+      },
+      {
+        "name": "seller_code",
+        "source": "CONTENT_PRODUCT",
+        "path": "$.shop.id"
+      },
+      {
+        "name": "seller_is_official",
+        "type": "boolean",
+        "source": "CONTENT_PRODUCT",
+        "path": "$.shop.is_official"
+      },
+      {
+        "name": "source",
+        "type": "string",
+        "default": "crawl"
+      }
+    ]
+  }
+}

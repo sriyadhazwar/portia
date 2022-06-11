@@ -1,0 +1,27 @@
+{
+  "shopee": [
+    "https://shopee.co.id/Printer-Label-cat.16049.16134.16182",
+    "https://shopee.co.id/Mesin-Jahit-cat.121.10013.12210",
+    "https://shopee.co.id/All-in-One-Printer-cat.134.17977.17979",
+    "https://shopee.co.id/Barcode-Printer-cat.134.17977.17983",
+    "https://shopee.co.id/Ink-Jet-Printer-cat.134.17977.17980",
+    "https://shopee.co.id/Laser-Color-cat.134.17977.17981",
+    "https://shopee.co.id/Laser-Mono-Printer-cat.134.17977.17982",
+    "https://shopee.co.id/Scanner-cat.134.17977.17985"
+  ],
+  "tokopedia": [
+    "https://www.tokopedia.com/p/perlengkapan-pesta-craft/peralatan-jahit/mesin-jahit",
+    "https://www.tokopedia.com/p/elektronik/printer/printer-all-in-one",
+    "https://www.tokopedia.com/p/elektronik/printer/printer-barcode",
+    "https://www.tokopedia.com/p/elektronik/printer/printer-ink-jet",
+    "https://www.tokopedia.com/p/elektronik/printer/printer-laser-color",
+    "https://www.tokopedia.com/p/elektronik/printer/printer-laser-mono",
+    "https://www.tokopedia.com/p/elektronik/printer/scanner"
+  ],
+  "bukalapak": [
+    "https://www.bukalapak.com/c/elektronik/mesin-jahit",
+    "https://www.bukalapak.com/c/komputer/printer/unit-printer",
+    "https://www.bukalapak.com/products/s/ink-jet-printer",
+    "https://www.bukalapak.com/c/komputer/scanner"
+  ]
+}

@@ -1,0 +1,26 @@
+Port: "8085"
+Mode: "Development"
+Extractor: 10
+Fetcher: 10
+Feeder: 10
+Database:
+  Host: "mongodb://localhost:27017"
+  DbName: "telunjuk"
+Broker:
+    Host: "localhost"
+    HttpPort: "15672"
+    User: "rabbitmq"
+    Password: "rabbitmq"
+Cors:
+  AllowOrigins: ["*"]
+  AllowMethods: ["GET", "POST", "PUT", "PATCH"]
+  AllowHeaders:
+    [
+      "Authorization",
+      "Content-Type",
+      "Access-Control-Allow-Origin",
+      "Access-Control-Allow-Headers",
+    ]
+  AllowCredentials: True
+  AllowWildcard: True
+  MaxAge: 120

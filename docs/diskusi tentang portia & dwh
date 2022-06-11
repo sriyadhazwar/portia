@@ -1,0 +1,88 @@
+BigQuery
+Category Maping
+	- breadcrumb_code
+Worker Mapping - kube dan manager, auto scaling
+
+SKU Mapping
+
+
+
+
+
+Hash#A Mecin ABC - 2020-10-01 10:00:00 -> non sku, non category
+Hash#A Mecin ABC - 2020-10-02 01:01:01 -> sku, category
+
+Big Query
+
+category
+	-- id
+	-- code
+	-- name
+	-- parent_id
+	-- level
+	-- created_at
+
+
+category_map
+	-- breadcrumb_code
+	-- site_id
+	-- breadcrumb
+	-- category_id
+	-- created_at
+
+
+product
+	-- hash_url --> md5(url-id)
+	-- url
+	-- site_id
+	-- title
+	-- image_primary
+	-- image_gallery
+	-- is_new
+	-- breadcrumb_code --> md5(site_id>normalized(breadcrumb))
+	-- breadcrumb
+	-- seller_name
+	-- seller_location
+	-- created_at
+
+
+// langsung ke table category_breadcrumb
+product_map_category
+	-- hash_url
+	-- category
+	-- created_at
+
+product_map_sku
+	-- hash_url
+	-- sku
+	-- created_at
+
+product_history
+	// daily (more than one record daily is possible)
+	--- all transactional fields
+	-- id
+	-- site_id
+	-- hash_url
+	-- price
+	-- price_original
+	-- total_sold
+	-- total_stock
+	-- total_view
+	-- is_instock
+	-- rating
+	-- crawled_at
+	-- created_at
+
+	// transaction data dihitung di query
+	// -- daily_transaction --> today (04) - yesterday(03), 03 nggk ada = 0
+	// -- daily_sales  --> today (04) - yesterday(03), 03 nggk ada = 0
+
+
+
+// Daily aggregation and update to BQ for compas
+// Scheduled mapping SKU for unknown/unmapped sku only, can be daily, or weekly
+
+
+
+//Category
+// Mapping ke mapping breadcrumb paling dekat jika tidak ketemu yang exact -- tidak pakai ini, pakai exact tapi ada kategori others

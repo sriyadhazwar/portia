@@ -1,0 +1,168 @@
+{
+    "_id": "5f8697fc1bc47392d0380342",
+    "site_id": 24,
+    "name": "Tokopedia Category",
+    "url": "https://www.tokopedia.com",
+    "type": "api",
+    "use_proxy": false,
+    "proxy_credential": "false",
+    "deep_crawl": true,
+    "headers": {
+        "Accept-Charset": "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
+        "Accept": "*/*",
+        "Cache-Control": "no-cache",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8,id;q=0.7,ms;q=0.6,su;q=0.5",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+    },
+    "use_lazy": false,
+    "definition": {
+        "entry_point": null,
+        "product": {
+            "type": "api",
+            "api": [
+                {
+                    "name": "CONTENT_PRODUCT",
+                    "url": "https://gql.tokopedia.com/",
+                    "method": "POST",
+                    "headers": {
+                        "Content-Type": "application/json",
+                        "x-source": "tokopedia-lite",
+                        "x-tkpd-lite-service": "zeus",
+                        "x-device": "desktop",
+                        "origin": "https://www.tokopedia.com",
+                        "sec-fetch-mode": "cors",
+                        "sec-fetch-site": "same-site",
+                        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36"
+                    },
+                    "body": [
+                        {
+                            "operationName": "PDPInfoQuery",
+                            "variables": {
+                                "shopDomain": "{{STORE_ID}}",
+                                "productKey": "{{PRODUCT_ID}}"
+                            },
+                            "query": "query PDPInfoQuery($shopDomain: String $productKey: String) { getPDPInfo(productID: 0 shopDomain: $shopDomain productKey: $productKey) { basic { id shopID name alias price priceCurrency lastUpdatePrice minOrder maxOrder status weight weightUnit condition url sku gtin isKreasiLokal isMustInsurance isEligibleCOD isLeasing catalogID needPrescription __typename } category { detail { id name breadcrumbURL __typename } __typename } pictures { picID urlOriginal } stats { countView countReview countTalk rating __typename } txStats { txSuccess txReject itemSold itemSoldPaymentVerified __typename } stock { useStock value stockWording __typename } } }"
+                        },
+                        {
+                            "operationName": "PDPShopInfoQuery",
+                            "variables": {
+                                "domain": "{{STORE_ID}}",
+                                "fields": [
+                                    "allow_manage",
+                                    "assets",
+                                    "core",
+                                    "favorite",
+                                    "last_active",
+                                    "other-shiploc",
+                                    "other-goldos",
+                                    "status",
+                                    "closed_info"
+                                ]
+                            },
+                            "query": "query PDPShopInfoQuery($fields: [String!]! $domain: String) { shopInfo: shopInfoByID(input: {shopIDs: [0] fields: $fields domain: $domain}) { result { favoriteData { alreadyFavorited __typename } goldOS { isGold isGoldBadge isOfficial badgeSVG title __typename } isAllowManage shopLastActive location shippingLoc { districtName cityName __typename } shopAssets { avatar __typename } shopCore { description domain shopID name url __typename } statusInfo { shopStatus statusMessage statusTitle __typename } __typename } error { message __typename } __typename } }"
+                        }
+                    ],
+                    "value": {
+                        "path": "$"
+                    }
+                }
+            ],
+            "throttle": 1000,
+            "vars": [
+                {
+                    "name": "PRODUCT_ID",
+                    "type": "regex",
+                    "input": "{{URL_PRODUCT}}",
+                    "value": "\\.tokopedia\\.com/.*?/(.*)"
+                },
+                {
+                    "name": "STORE_ID",
+                    "type": "regex",
+                    "input": "{{URL_PRODUCT}}",
+                    "value": "\\.tokopedia\\.com/(.*?)/.*",
+                    "func": "'{{VALUE}}'.toLowerCase()"
+                }
+            ]
+        },
+        "vars": [
+            {
+                "name": "PAGE_SIZE",
+                "type": "constant",
+                "value": "60"
+            }
+        ],
+        "product_map": [
+            {
+                "name": "title",
+                "source": "CONTENT_PRODUCT",
+                "path": "$[0].data.getPDPInfo.basic.name"
+            },
+            {
+                "name": "price",
+                "type": "number",
+                "source": "CONTENT_PRODUCT",
+                "path": "$[0].data.getPDPInfo.campaign.discountedPrice"
+            },
+            {
+                "name": "price_original",
+                "type": "number",
+                "source": "CONTENT_PRODUCT",
+                "path": "$[0].data.getPDPInfo.basic.price"
+            },
+            {
+                "name": "total_sold",
+                "type": "number",
+                "source": "CONTENT_PRODUCT",
+                "path": "$[0].data.getPDPInfo.txStats.itemSoldPaymentVerified"
+            },
+            {
+                "name": "total_review",
+                "type": "number",
+                "source": "CONTENT_PRODUCT",
+                "path": "$[0].data.getPDPInfo.stats.countReview"
+            },
+            {
+                "name": "total_view",
+                "type": "number",
+                "source": "CONTENT_PRODUCT",
+                "path": "$[0].data.getPDPInfo.stats.countView"
+            },
+            {
+                "name": "image_primary",
+                "source": "CONTENT_PRODUCT",
+                "path": "$[0].data.getPDPInfo.pictures[0].urlOriginal"
+            },
+            {
+                "name": "rating",
+                "type": "decimal",
+                "source": "CONTENT_PRODUCT",
+                "path": "$[0].data.getPDPInfo.stats.rating",
+                "value": "{{VALUE}}/20"
+            },
+            {
+                "name": "is_new",
+                "type": "boolean",
+                "source": "CONTENT_PRODUCT",
+                "path": "$[0].data.getPDPInfo.basic.condition",
+                "value": "('{{VALUE}}' == 'NEW')"
+            },
+            {
+                "name": "seller_name",
+                "source": "CONTENT_PRODUCT",
+                "path": "$[1].data.shopInfo.result[0].shopCore.name"
+            },
+            {
+                "name": "seller_location",
+                "source": "CONTENT_PRODUCT",
+                "path": "$[1].data.shopInfo.result[0].shippingLoc.cityName"
+            },
+            {
+                "name": "seller_is_official",
+                "type": "boolean",
+                "source": "CONTENT_PRODUCT",
+                "path": "$[1].data.shopInfo.result[0].goldOS.isOfficial"
+            }
+        ]
+    }
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "name": "hash_url",
+    "type": "STRING",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "url",
+    "type": "STRING",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "site_id",
+    "type": "INTEGER",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "title",
+    "type": "STRING",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "image_primary",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "image_gallery",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "is_new",
+    "type": "BOOLEAN",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "breadcrumb_code",
+    "type": "STRING",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "breadcrumb",
+    "type": "STRING",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "seller_name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "seller_location",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "created_at",
+    "type": "TIMESTAMP",
+    "mode": "REQUIRED"
+  }
+]

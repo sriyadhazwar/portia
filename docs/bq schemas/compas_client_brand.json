@@ -1,0 +1,21 @@
+[
+  {
+    "name": "client_id",
+    "type": "INTEGER",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "brand_id",
+    "type": "INTEGER",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "is_client_brand",
+    "type": "BOOLEAN",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "created_at",
+    "type": "TIMESTAMP"
+  }
+]

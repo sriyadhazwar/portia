@@ -1,0 +1,234 @@
+{
+  "job": {
+    "total_product": 0,
+    "total_processed": 0,
+    "_id": "5f8698371bc47392d0380342",
+    "name": "Test Run",
+    "url": "https://shopee.co.id/Popok-Bayi-cat.45.1259",
+    "driver_id": "5f8697fc1bc47392d0380341",
+    "created_at": "2020-10-14T06:18:31.828Z",
+    "status": "waiting",
+    "__v": 0,
+    "root": true
+  },
+  "driver": {
+    "_id": "5f8697fc1bc47392d0380341",
+    "site_id": 507,
+    "name": "Shopee - Category",
+    "url": "https://shopee.co.id/",
+    "type": "api",
+    "use_proxy": false,
+    "proxy_credential": "false",
+    "deep_crawl": true,
+    "user_agent": "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/W.X.Y.Z‡ Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+    "headers": {
+      "Accept-Charset": "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
+      "Accept": "*/*",
+      "Cache-Control": "no-cache",
+      "Accept-Encoding": "gzip, deflate, br",
+      "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8,id;q=0.7,ms;q=0.6,su;q=0.5"
+    },
+    "use_lazy": false,
+    "definition": {
+      "entry_point": {
+        "type": "api",
+        "api": {
+          "url": "https://shopee.co.id/api/v2/search_items?page_type=search&by=relevancy&match_id={{CATEGORY_ID}}&limit={{PAGE_SIZE}}&newest={{PAGE_OFFSET}}&version=2&order=desc&price_min={{PRICE_MIN}}&price_max={{PRICE_MAX}}",
+          "method": "GET",
+          "header": "{\r\n  \"Accept-Charset\": \"ISO-8859-1,utf-8;q=0.7,*;q=0.7\",\r\n  \"Accept\": \"*/*\",\r\n  \"Cache-Control\": \"no-cache\",\r\n  \"User-Agent\": \"Telunjukbot/1.0; https://www.telunjuk.com/about\",\r\n  \"Accept-Encoding\": \"gzip, deflate, br\",\r\n  \"Accept-Language\": \"en-GB,en-US;q=0.9,en;q=0.8,id;q=0.7,ms;q=0.6,su;q=0.5\"\r\n}",
+          "value": {
+            "path": "$.items.*",
+            "format": "https://shopee.co.id/{{PRODUCT_NAME_SLUGIFY}}-i.{{SHOP_ID}}.{{PRODUCT_ID}}",
+            "vars": {
+              "PRODUCT_NAME_SLUGIFY": "$.name",
+              "SHOP_ID": "$.shopid",
+              "PRODUCT_ID": "$.itemid"
+            }
+          }
+        },
+        "page_max": 100,
+        "throttle": 100,
+        "deep_crawl": {
+          "price_min": 0,
+          "price_max": 0,
+          "price_increment": 50000,
+          "batch_threshold": 5000,
+          "minimum_price_range": 100,
+          "product_count_path": "$.total_count"
+        }
+      },
+      "product": {
+        "type": "api",
+        "api": [
+          {
+            "name": "CONTENT_PRODUCT",
+            "url": "https://shopee.co.id/api/v2/item/get?itemid={{PRODUCT_ID}}&shopid={{STORE_ID}}",
+            "method": "GET",
+            "header": "{\r\n  \"Accept-Charset\": \"ISO-8859-1,utf-8;q=0.7,*;q=0.7\",\r\n  \"Accept\": \"*/*\",\r\n  \"Cache-Control\": \"no-cache\",\r\n  \"User-Agent\": \"Telunjukbot/1.0; https://www.telunjuk.com/about\",\r\n  \"Accept-Encoding\": \"gzip, deflate, br\",\r\n  \"Accept-Language\": \"en-GB,en-US;q=0.9,en;q=0.8,id;q=0.7,ms;q=0.6,su;q=0.5\"\r\n}",
+            "value": {
+              "path": "$"
+            }
+          },
+          {
+            "name": "CONTENT_STORE",
+            "url": "https://shopee.co.id/api/v2/shop/get?is_brief=1&shopid={{STORE_ID}}",
+            "method": "GET",
+            "header": "{\r\n  \"Accept-Charset\": \"ISO-8859-1,utf-8;q=0.7,*;q=0.7\",\r\n  \"Accept\": \"*/*\",\r\n  \"Cache-Control\": \"no-cache\",\r\n  \"User-Agent\": \"Telunjukbot/1.0; https://www.telunjuk.com/about\",\r\n  \"Accept-Encoding\": \"gzip, deflate, br\",\r\n  \"Accept-Language\": \"en-GB,en-US;q=0.9,en;q=0.8,id;q=0.7,ms;q=0.6,su;q=0.5\"\r\n}",
+            "value": {
+              "path": "$"
+            }
+          }
+        ],
+        "throttle": 100
+      },
+      "product_map": [
+        {
+          "name": "title",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item.name"
+        },
+        {
+          "name": "description",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item.description"
+        },
+        {
+          "name": "brand",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item.attributes[?(@.name=='Merek')].value",
+          "default": "Ora ONO"
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item.price",
+          "value": "{{VALUE}}/100000"
+        },
+        {
+          "name": "price_original",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item.price_before_discount",
+          "value": "{{VALUE}}/100000"
+        },
+        {
+          "name": "breadcrumb",
+          "type": "array",
+          "default": [
+            "lala",
+            "lolo",
+            "lili"
+          ]
+        },
+        {
+          "name": "image_primary",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item.images[0]",
+          "value": "https://cf.shopee.co.id/file/{{VALUE}}"
+        },
+        {
+          "name": "total_sold",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item.historical_sold"
+        },
+        {
+          "name": "total_sold_2",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item.sold"
+        },
+        {
+          "name": "total_stock",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item.stock"
+        },
+        {
+          "name": "total_review",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item.cmt_count"
+        },
+        {
+          "name": "rating",
+          "type": "decimal",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.item.item_rating.rating_star"
+        },
+        {
+          "name": "seller_name",
+          "source": "CONTENT_STORE",
+          "path": "$.data.name"
+        },
+        {
+          "name": "seller_location",
+          "source": "CONTENT_STORE",
+          "path": "$.data.shop_location"
+        },
+        {
+          "name": "seller_rating",
+          "type": "decimal",
+          "source": "CONTENT_STORE",
+          "path": "$.data.account.total_avg_star"
+        },
+        {
+          "name": "seller_is_official",
+          "type": "boolean",
+          "source": "CONTENT_STORE",
+          "path": "$.data.is_official_shop"
+        }
+      ],
+      "vars": [
+        {
+          "name": "CATEGORY_ID",
+          "type": "regex",
+          "input": "{{URL}}",
+          "value": "shopee\\.co\\.id\\/.+?\\.\\d+\\.(\\d+)",
+          "args": {
+            "group": 1
+          }
+        },
+        {
+          "name": "STORE_ID",
+          "type": "regex",
+          "input": "{{URL_PRODUCT}}",
+          "value": "shopee\\.co\\.id.*-i\\.(\\d*)\\.\\d*",
+          "args": {
+            "group": 1
+          }
+        },
+        {
+          "name": "PRODUCT_ID",
+          "type": "regex",
+          "input": "{{URL_PRODUCT}}",
+          "value": "shopee\\.co\\.id.*-i\\.\\d*\\.(\\d*)",
+          "args": {
+            "group": 1
+          }
+        },
+        {
+          "name": "PRICE_MIN",
+          "type": "constant",
+          "value": "0"
+        },
+        {
+          "name": "PRICE_MAX",
+          "type": "constant",
+          "value": "3125"
+        },
+        {
+          "name": "PAGE_NUMBER",
+          "type": "constant",
+          "value": 2
+        }
+      ]
+    }
+  },
+  "product": {
+    "url": "https://shopee.co.id/PAMPERS-CURAH-SIZE-S-M-L-X-i.9291911.3634237718",
+    "content": "[{\"name\":\"CONTENT_PRODUCT\",\"content\":\"{\\\"item\\\":{\\\"itemid\\\":3634237718,\\\"price_max_before_discount\\\":-1,\\\"item_status\\\":\\\"normal\\\",\\\"can_use_wholesale\\\":false,\\\"show_free_shipping\\\":false,\\\"estimated_days\\\":2,\\\"is_hot_sales\\\":null,\\\"is_slash_price_item\\\":false,\\\"upcoming_flash_sale\\\":null,\\\"slash_lowest_price\\\":null,\\\"is_partial_fulfilled\\\":false,\\\"condition\\\":1,\\\"add_on_deal_info\\\":null,\\\"is_non_cc_installment_payment_eligible\\\":false,\\\"categories\\\":[{\\\"display_name\\\":\\\"Ibu & Bayi\\\",\\\"catid\\\":45,\\\"image\\\":null,\\\"no_sub\\\":false,\\\"is_default_subcat\\\":false,\\\"block_buyer_platform\\\":null},{\\\"display_name\\\":\\\"Popok Bayi\\\",\\\"catid\\\":1259,\\\"image\\\":null,\\\"no_sub\\\":false,\\\"is_default_subcat\\\":false,\\\"block_buyer_platform\\\":null},{\\\"display_name\\\":\\\"Popok Sekali Pakai\\\",\\\"catid\\\":12720,\\\"image\\\":null,\\\"no_sub\\\":true,\\\"is_default_subcat\\\":true,\\\"block_buyer_platform\\\":null}],\\\"ctime\\\":1589607414,\\\"name\\\":\\\"PAMPERS CURAH SIZE S,M,L,XL,XXL\\\",\\\"show_shopee_verified_label\\\":false,\\\"size_chart\\\":null,\\\"is_pre_order\\\":false,\\\"service_by_shopee_flag\\\":0,\\\"historical_sold\\\":41332,\\\"reference_item_id\\\":\\\"\\\",\\\"recommendation_info\\\":null,\\\"bundle_deal_info\\\":null,\\\"price_max\\\":149900000,\\\"has_lowest_price_guarantee\\\":false,\\\"shipping_icon_type\\\":0,\\\"images\\\":[\\\"fb1098cd238d1fcbb051eb23b4b8bc64\\\",\\\"f09d6c19937635d3816d0c6d5c9e2a7f\\\",\\\"1d02d47a491ea86afe12d17bfc6a7435\\\",\\\"95919bb0cf43a22a95a250176d45ab6c\\\"],\\\"price_before_discount\\\":0,\\\"cod_flag\\\":1,\\\"catid\\\":45,\\\"is_official_shop\\\":false,\\\"coin_earn_label\\\":null,\\\"hashtag_list\\\":null,\\\"sold\\\":11916,\\\"makeup\\\":null,\\\"item_rating\\\":{\\\"rating_star\\\":4.75463,\\\"rating_count\\\":[866,11,6,30,98,721],\\\"rcount_with_image\\\":431,\\\"rcount_with_context\\\":493},\\\"show_official_shop_label_in_title\\\":false,\\\"discount\\\":null,\\\"reason\\\":null,\\\"label_ids\\\":[35,1000788,1001017,1000871,1000874,1001029,1000031,1000246,1000006,1000247],\\\"has_group_buy_stock\\\":false,\\\"other_stock\\\":null,\\\"deep_discount\\\":null,\\\"attributes\\\":[{\\\"is_pending_qc\\\":true,\\\"idx\\\":1,\\\"value\\\":\\\"Januari 2021\\\",\\\"id\\\":22337,\\\"is_timestamp\\\":false,\\\"name\\\":\\\"Kadaluarsa\\\"},{\\\"is_pending_qc\\\":true,\\\"idx\\\":2,\\\"value\\\":\\\"24 Bulan\\\",\\\"id\\\":22340,\\\"is_timestamp\\\":false,\\\"name\\\":\\\"Umur Simpan\\\"},{\\\"is_pending_qc\\\":true,\\\"idx\\\":3,\\\"value\\\":\\\"\\\",\\\"id\\\":22905,\\\"is_timestamp\\\":false,\\\"name\\\":\\\"Usia\\\"},{\\\"is_pending_qc\\\":true,\\\"idx\\\":4,\\\"value\\\":\\\"Lainnya\\\",\\\"id\\\":22906,\\\"is_timestamp\\\":false,\\\"name\\\":\\\"Ukuran\\\"},{\\\"is_pending_qc\\\":true,\\\"idx\\\":5,\\\"value\\\":\\\"Celana\\\",\\\"id\\\":22907,\\\"is_timestamp\\\":false,\\\"name\\\":\\\"Jenis\\\"},{\\\"is_pending_qc\\\":true,\\\"idx\\\":6,\\\"value\\\":\\\"Lainnya\\\",\\\"id\\\":22908,\\\"is_timestamp\\\":false,\\\"name\\\":\\\"Kemasan\\\"}],\\\"badge_icon_type\\\":0,\\\"liked\\\":false,\\\"cmt_count\\\":866,\\\"image\\\":\\\"fb1098cd238d1fcbb051eb23b4b8bc64\\\",\\\"recommendation_algorithm\\\":null,\\\"is_cc_installment_payment_eligible\\\":false,\\\"shopid\\\":9291911,\\\"normal_stock\\\":1874,\\\"video_info_list\\\":[],\\\"installment_plans\\\":null,\\\"view_count\\\":21984,\\\"current_promotion_has_reserve_stock\\\":false,\\\"liked_count\\\":586,\\\"show_official_shop_label\\\":false,\\\"price_min_before_discount\\\":-1,\\\"show_discount\\\":0,\\\"preview_info\\\":null,\\\"flag\\\":196608,\\\"exclusive_price_info\\\":null,\\\"current_promotion_reserved_stock\\\":0,\\\"wholesale_tier_list\\\":[],\\\"group_buy_info\\\":null,\\\"shopee_verified\\\":false,\\\"hidden_price_display\\\":null,\\\"transparent_background_image\\\":\\\"\\\",\\\"welcome_package_info\\\":null,\\\"discount_stock\\\":null,\\\"coin_info\\\":{\\\"spend_cash_unit\\\":100000,\\\"coin_earn_items\\\":[]},\\\"is_adult\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"raw_discount\\\":0,\\\"is_preferred_plus_seller\\\":false,\\\"is_category_failed\\\":false,\\\"price_min\\\":110000000,\\\"can_use_bundle_deal\\\":false,\\\"cb_option\\\":0,\\\"brand\\\":\\\"Random\\\",\\\"stock\\\":1874,\\\"status\\\":1,\\\"bundle_deal_id\\\":0,\\\"is_group_buy_item\\\":null,\\\"description\\\":\\\"Ready sesuai stok y bun..\\\\n1kg muat 30pcs..\\\\n Min blnja 7pcs y..\\\\n\\\\nNote: untuk motif random/polos Disarankan klo mo order size'a d naikin 1 size,karna size'a lbh kecil,misal make M berrti hrs order L..\\\\n\\\\nklo sweety dan mamy poko sizenya seperti biasa y..\\\\n\\\\nMasalah iritasi/tidak itu tergantung cocok\\\\\\\"a s kecil ya bun..ada yang cocok hanya 1 merek aja,ada juga yang cocok pakai merek apa aja bisa..krna kulit si baby itu sensitif..\\\\n\\\\nTidak menerima komplain masalah size kekecilan dan iritasi ya bun..karna sudah dijelaskan di atas..\\\\n\\\",\\\"flash_sale\\\":null,\\\"models\\\":[{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Sweety,Xxl random\\\",\\\"promotionid\\\":0,\\\"price\\\":169900000,\\\"price_stocks\\\":[{\\\"model_id\\\":41121439673,\\\"stockout_time\\\":1605531402,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":169900000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":0}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":0,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[0,4],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":41121439673,\\\"sold\\\":1673,\\\"stock\\\":0},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Mamy poko,L\\\",\\\"promotionid\\\":0,\\\"price\\\":139900000,\\\"price_stocks\\\":[{\\\"model_id\\\":41844020784,\\\"stockout_time\\\":null,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":139900000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":558}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":558,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[3,2],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":41844020784,\\\"sold\\\":153,\\\"stock\\\":558},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Mamy poko,M\\\",\\\"promotionid\\\":0,\\\"price\\\":129900000,\\\"price_stocks\\\":[{\\\"model_id\\\":41844020785,\\\"stockout_time\\\":null,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":129900000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":670}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":670,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[3,1],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":41844020785,\\\"sold\\\":50,\\\"stock\\\":670},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Mamy poko,Xl\\\",\\\"promotionid\\\":0,\\\"price\\\":149900000,\\\"price_stocks\\\":[{\\\"model_id\\\":41844020786,\\\"stockout_time\\\":null,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":149900000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":275}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":275,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[3,3],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":41844020786,\\\"sold\\\":81,\\\"stock\\\":275},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Mamy poko,Xxl random\\\",\\\"promotionid\\\":0,\\\"price\\\":169900000,\\\"price_stocks\\\":[{\\\"model_id\\\":41844020787,\\\"stockout_time\\\":1605532711,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":169900000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":0}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":0,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[3,4],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":41844020787,\\\"sold\\\":0,\\\"stock\\\":0},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Mamy poko,S\\\",\\\"promotionid\\\":0,\\\"price\\\":119900000,\\\"price_stocks\\\":[{\\\"model_id\\\":41844020788,\\\"stockout_time\\\":null,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":119900000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":126}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":126,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[3,0],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":41844020788,\\\"sold\\\":24,\\\"stock\\\":126},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Polos,M\\\",\\\"promotionid\\\":0,\\\"price\\\":107000000,\\\"price_stocks\\\":[{\\\"model_id\\\":61471838869,\\\"stockout_time\\\":1604986839,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":107000000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":0}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":0,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[1,1],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":61471838869,\\\"sold\\\":982,\\\"stock\\\":0},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Polos,Xxl random\\\",\\\"promotionid\\\":0,\\\"price\\\":120000000,\\\"price_stocks\\\":[{\\\"model_id\\\":61471838870,\\\"stockout_time\\\":1603281726,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":120000000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":0}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":0,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[1,4],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":61471838870,\\\"sold\\\":0,\\\"stock\\\":0},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Polos,S\\\",\\\"promotionid\\\":0,\\\"price\\\":102000000,\\\"price_stocks\\\":[{\\\"model_id\\\":61471838871,\\\"stockout_time\\\":1605531402,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":102000000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":0}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":0,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[1,0],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":61471838871,\\\"sold\\\":748,\\\"stock\\\":0},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Polos,L\\\",\\\"promotionid\\\":0,\\\"price\\\":110000000,\\\"price_stocks\\\":[{\\\"model_id\\\":61471838872,\\\"stockout_time\\\":1604971512,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":110000000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":0}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":0,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[1,2],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":61471838872,\\\"sold\\\":623,\\\"stock\\\":0},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Motif Random,L\\\",\\\"promotionid\\\":0,\\\"price\\\":120000000,\\\"price_stocks\\\":[{\\\"model_id\\\":61471838873,\\\"stockout_time\\\":1605802297,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":120000000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":0}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":0,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[2,2],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":61471838873,\\\"sold\\\":1161,\\\"stock\\\":0},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Motif Random,Xxl random\\\",\\\"promotionid\\\":0,\\\"price\\\":120000000,\\\"price_stocks\\\":[{\\\"model_id\\\":61471838874,\\\"stockout_time\\\":1603281726,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":120000000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":0}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":0,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[2,4],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":61471838874,\\\"sold\\\":0,\\\"stock\\\":0},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Polos,Xl\\\",\\\"promotionid\\\":0,\\\"price\\\":120000000,\\\"price_stocks\\\":[{\\\"model_id\\\":61471838875,\\\"stockout_time\\\":1604927796,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":120000000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":0}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":0,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[1,3],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":61471838875,\\\"sold\\\":494,\\\"stock\\\":0},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Motif Random,S\\\",\\\"promotionid\\\":0,\\\"price\\\":110000000,\\\"price_stocks\\\":[{\\\"model_id\\\":61471838876,\\\"stockout_time\\\":0,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":110000000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":100}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":100,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[2,0],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":61471838876,\\\"sold\\\":300,\\\"stock\\\":100},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Motif Random,M\\\",\\\"promotionid\\\":0,\\\"price\\\":115000000,\\\"price_stocks\\\":[{\\\"model_id\\\":61471838877,\\\"stockout_time\\\":0,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":115000000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":50}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":50,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[2,1],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":61471838877,\\\"sold\\\":993,\\\"stock\\\":50},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Motif Random,Xl\\\",\\\"promotionid\\\":0,\\\"price\\\":125000000,\\\"price_stocks\\\":[{\\\"model_id\\\":61471838878,\\\"stockout_time\\\":1605784560,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":125000000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":0}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":0,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[2,3],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":61471838878,\\\"sold\\\":672,\\\"stock\\\":0},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Sweety,L\\\",\\\"promotionid\\\":0,\\\"price\\\":143000000,\\\"price_stocks\\\":[{\\\"model_id\\\":70754888756,\\\"stockout_time\\\":0,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":143000000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":95}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":95,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[0,2],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":70754888756,\\\"sold\\\":5158,\\\"stock\\\":95},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Sweety,S\\\",\\\"promotionid\\\":0,\\\"price\\\":125000000,\\\"price_stocks\\\":[{\\\"model_id\\\":70754888757,\\\"stockout_time\\\":1604736973,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":125000000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":0}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":0,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[0,0],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":70754888757,\\\"sold\\\":385,\\\"stock\\\":0},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Sweety,Xl\\\",\\\"promotionid\\\":0,\\\"price\\\":149900000,\\\"price_stocks\\\":[{\\\"model_id\\\":70754888758,\\\"stockout_time\\\":1605405524,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":149900000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":0}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":0,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[0,3],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":70754888758,\\\"sold\\\":1832,\\\"stock\\\":0},{\\\"itemid\\\":3634237718,\\\"status\\\":1,\\\"current_promotion_reserved_stock\\\":0,\\\"name\\\":\\\"Sweety,M\\\",\\\"promotionid\\\":0,\\\"price\\\":135000000,\\\"price_stocks\\\":[{\\\"model_id\\\":70754888759,\\\"stockout_time\\\":1605510188,\\\"region\\\":\\\"ID\\\",\\\"rebate\\\":null,\\\"price\\\":135000000,\\\"promotion_type\\\":0,\\\"allocated_stock\\\":null,\\\"shop_id\\\":9291911,\\\"end_time\\\":null,\\\"stock_breakdown_by_location\\\":[],\\\"item_id\\\":3634237718,\\\"promotion_id\\\":0,\\\"purchase_limit\\\":null,\\\"start_time\\\":null,\\\"stock\\\":0}],\\\"current_promotion_has_reserve_stock\\\":false,\\\"currency\\\":\\\"IDR\\\",\\\"normal_stock\\\":0,\\\"extinfo\\\":{\\\"seller_promotion_limit\\\":null,\\\"has_shopee_promo\\\":null,\\\"group_buy_info\\\":null,\\\"holiday_mode_old_stock\\\":null,\\\"tier_index\\\":[0,1],\\\"seller_promotion_refresh_time\\\":0},\\\"price_before_discount\\\":0,\\\"modelid\\\":70754888759,\\\"sold\\\":2136,\\\"stock\\\":0}],\\\"has_low_fulfillment_rate\\\":false,\\\"price\\\":110000000,\\\"shop_location\\\":\\\"KAB. BEKASI\\\",\\\"tier_variations\\\":[{\\\"images\\\":[],\\\"properties\\\":[],\\\"type\\\":0,\\\"name\\\":\\\"Warna\\\",\\\"options\\\":[\\\"Sweety\\\",\\\"Polos\\\",\\\"Motif Random\\\",\\\"Mamy poko\\\"]},{\\\"images\\\":[],\\\"properties\\\":[],\\\"type\\\":0,\\\"name\\\":\\\"Ukuran\\\",\\\"options\\\":[\\\"S\\\",\\\"M\\\",\\\"L\\\",\\\"Xl\\\",\\\"Xxl random\\\"]}],\\\"makeups\\\":null,\\\"welcome_package_type\\\":0,\\\"show_official_shop_label_in_normal_position\\\":null,\\\"item_type\\\":0},\\\"version\\\":\\\"ad4f8b896bc051e8d7b20e2e464f048c\\\",\\\"data\\\":null,\\\"error_msg\\\":null,\\\"error\\\":null}\"},{\"name\":\"CONTENT_STORE\",\"content\":\"{\\\"version\\\":\\\"48e39226fec80f20f33e2a073bdc7dc9\\\",\\\"data\\\":{\\\"campaign_config\\\":null,\\\"rating_normal\\\":87,\\\"followed\\\":null,\\\"userid\\\":9293208,\\\"shopid\\\":9291911,\\\"show_official_shop_label_in_normal_position\\\":null,\\\"rating_bad\\\":24,\\\"mtime\\\":1605826675,\\\"is_preferred_plus_seller\\\":false,\\\"has_decoration\\\":null,\\\"is_shopee_verified\\\":false,\\\"cancellation_rate\\\":2,\\\"is_official_shop\\\":false,\\\"vacation\\\":false,\\\"show_low_fulfillment_warning\\\":false,\\\"item_count\\\":16,\\\"is_ab_test\\\":false,\\\"preparation_time\\\":60956,\\\"follower_count\\\":394,\\\"cb_option\\\":0,\\\"shop_location\\\":\\\"KAB. BEKASI\\\",\\\"enable_display_unitno\\\":null,\\\"status\\\":1,\\\"show_new_arrival_items\\\":true,\\\"is_blocking_owner\\\":null,\\\"description\\\":\\\"rezky1212\\\",\\\"rating_good\\\":1665,\\\"is_semi_inactive\\\":null,\\\"has_in_shop_flash_sale\\\":false,\\\"show_official_shop_label\\\":false,\\\"shop_covers\\\":null,\\\"show_official_shop_label_in_title\\\":false,\\\"campaign_id\\\":0,\\\"buyer_rating\\\":{\\\"rating_star\\\":5,\\\"rating_count\\\":[0,0,0,0,0,7]},\\\"chat_disabled\\\":false,\\\"show_live_tab\\\":false,\\\"response_time\\\":10200,\\\"ctime\\\":1472223380,\\\"account\\\":{\\\"username\\\":\\\"desysutirah\\\",\\\"following_count\\\":28,\\\"hide_likes\\\":0,\\\"email_verified\\\":true,\\\"fbid\\\":\\\"304795526538816\\\",\\\"total_avg_star\\\":4.716698,\\\"phone_verified\\\":true,\\\"feed_account_info\\\":{\\\"can_post_feed\\\":true,\\\"is_kol\\\":null},\\\"portrait\\\":\\\"d7666fe0d02d20f26fb5f9d74ac6c40d\\\",\\\"is_seller\\\":true},\\\"response_rate\\\":93,\\\"disable_make_offer\\\":null,\\\"name\\\":\\\"desysutirah\\\",\\\"rating_star\\\":4.715452,\\\"country\\\":\\\"ID\\\",\\\"show_shopee_verified_label\\\":false,\\\"cover\\\":\\\"57c6f4382d3f739fe677e2d7daca9a13\\\",\\\"has_shopee_flash_sale\\\":false,\\\"place\\\":\\\"KAB. BEKASI - TAMBUN SELATAN, JAWA BARAT, ID\\\",\\\"new_arrival_items_start_ts\\\":1604592000,\\\"has_flash_sale\\\":false,\\\"last_active_time\\\":1605829421,\\\"real_url_if_matching_custom_url\\\":null,\\\"has_brand_sale\\\":false},\\\"error_msg\\\":null,\\\"error\\\":0}\"}]",
+    "type": "json"
+  }
+}

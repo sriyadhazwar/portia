@@ -1,0 +1,217 @@
+{
+  "job": {
+    "total_product": 0,
+    "total_processed": 0,
+    "_id": "5f8698371bc47392d038034B",
+    "name": "Test Run",
+    "url": "https://www.bukalapak.com/c/perlengkapan-bayi/diapering",
+    "driver_id": "5f8697fc1bc47392d0380341",
+    "created_at": "2020-10-14T06:18:31.828Z",
+    "status": "waiting",
+    "__v": 0
+  },
+  "driver": {
+    "_id": "5f8697fc1bc47392d0380342",
+    "site_id": 439,
+    "name": "Bukalapak - Category",
+    "url": "https://www.bukalapak.com/",
+    "type": "api",
+    "use_proxy": false,
+    "proxy_credential": "false",
+    "deep_crawl": true,
+    "headers": {
+      "Accept-Charset": "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
+      "Accept": "*/*",
+      "Cache-Control": "no-cache",
+      "Accept-Encoding": "gzip, deflate, br",
+      "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8,id;q=0.7,ms;q=0.6,su;q=0.5",
+      "User-Agent": "Telunjukbot/1.0; +https://www.telunjuk.com/about"
+    },
+    "use_lazy": false,
+    "definition": {
+      "entry_point": {
+        "type": "api",
+        "api": {
+          "url": "https://api.bukalapak.com/multistrategy-products?prambanan_override=true&access_token={{ACCESS_TOKEN}}&offset={{PAGE_OFFSET}}&category_id={{CATEGORY_ID}}&limit={{PAGE_SIZE}}&price_range={{PRICE_MIN}}:{{PRICE_MAX}}&page={{PAGE_NUMBER}}&sort=bestratingratio&facet=true",
+          "method": "GET",
+          "headers": null,
+          "value": {
+            "path": "$.data.*.url"
+          }
+        },
+        "page_max": 100,
+        "throttle": 100,
+        "deep_crawl": {
+          "price_min": 0,
+          "price_max": 0,
+          "price_increment": 50000,
+          "batch_threshold": 3000,
+          "minimum_price_range": 100,
+          "product_count_path": "$.meta.total"
+        },
+        "vars": [
+          {
+            "name": "CATEGORY_ID",
+            "type": "api",
+            "async": true,
+            "value": "$",
+            "api": {
+              "url": "https://api.bukalapak.com/categories/permalink/{{CATEGORY}}?access_token={{ACCESS_TOKEN}}",
+              "method": "GET",
+              "headers": null,
+              "value": {
+                "path": "$.data.id"
+              }
+            }
+          },
+          {
+            "name": "CATEGORY",
+            "type": "regex",
+            "input": "{{URL}}",
+            "value": "https://www\\.bukalapak\\.com/c/(.*)",
+            "args": {
+              "group": 1
+            }
+          }
+        ]
+      },
+      "product": {
+        "type": "api",
+        "api": [
+          {
+            "url": "https://api.bukalapak.com/products/{{PRODUCT_ID}}?access_token={{ACCESS_TOKEN}}",
+            "method": "GET",
+            "headers": null,
+            "value": {
+              "path": "$.data"
+            }
+          }
+        ],
+        "throttle": 100,
+        "vars": [
+          {
+            "name": "PRODUCT_ID",
+            "type": "regex",
+            "input": "{{URL_PRODUCT}}",
+            "value": "bukalapak\\.com/p/.*/(.*?)-",
+            "args": {
+              "group": 1
+            }
+          }
+        ]
+      },
+      "vars": [
+        {
+          "name": "ACCESS_TOKEN",
+          "type": "api",
+          "async": true,
+          "value": "$",
+          "api": {
+            "url": "https://www.bukalapak.com/westeros_auth_proxies",
+            "method": "POST",
+            "headers": null,
+            "value": {
+              "path": "$.access_token"
+            }
+          }
+        },
+        {
+          "name": "PRICE_MIN",
+          "type": "constant",
+          "value": "0"
+        },
+        {
+          "name": "PRICE_MAX",
+          "type": "constant",
+          "value": "12500"
+        },
+        {
+          "name": "PAGE_NUMBER",
+          "type": "constant",
+          "value": 2
+        }
+      ],
+      "product_map": [
+        {
+          "name": "title",
+          "path": "$.name"
+        },
+        {
+          "name": "description",
+          "path": "$.description"
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "path": "$.price"
+        },
+        {
+          "name": "price_original",
+          "type": "number",
+          "path": "$.deal.original_price"
+        },
+        {
+          "name": "breadcrumb",
+          "type": "array",
+          "path": "$.category.structure"
+        },
+        {
+          "name": "image_primary",
+          "path": "$.images.large_urls[0]"
+        },
+        {
+          "name": "is_new",
+          "type": "boolean",
+          "path": "$.condition",
+          "value": "'{{VALUE}}' == 'Baru'"
+        },
+        {
+          "name": "total_sold",
+          "type": "number",
+          "path": "$.stats.sold_count"
+        },
+        {
+          "name": "total_stock",
+          "type": "number",
+          "path": "$.stock"
+        },
+        {
+          "name": "total_review",
+          "type": "number",
+          "path": "$.rating.user_count"
+        },
+        {
+          "name": "total_view",
+          "type": "number",
+          "path": "$.stats.view_count"
+        },
+        {
+          "name": "rating",
+          "type": "decimal",
+          "path": "$.rating.average_rate"
+        },
+        {
+          "name": "seller_name",
+          "path": "$.store.name"
+        },
+        {
+          "name": "seller_location",
+          "path": "$.store.address.city"
+        },
+        {
+          "name": "seller_rating",
+          "type": "decimal",
+          "path": "$.data.account.total_avg_star"
+        },
+        {
+          "name": "seller_is_official",
+          "type": "boolean",
+          "path": "$.store.brand_seller"
+        }
+      ]
+    }
+  },
+  "product": {
+    "url": "https://www.bukalapak.com/p/perlengkapan-bayi/diapering/2s6o1xg-jual-mamy-poko-ukuran-m"
+  }
+}

@@ -1,0 +1,262 @@
+{
+  "job": {
+    "_id": "9961af0e93e34e39a2101b38f25a336a",
+    "name": "Job Tokopedia Category",
+    "driver_id": "",
+    "created_at": "2021-03-13 10:56:39",
+    "root": true,
+    "url": "https://www.tokopedia.com/p/komputer-laptop/networking"
+  },
+  "driver": {
+    "_id": "5f8697fc1bc47392d0380342",
+    "site_id": 24,
+    "name": "Tokopedia Category",
+    "url": "https://www.tokopedia.com",
+    "type": "api",
+    "use_proxy": false,
+    "proxy_credential": "false",
+    "deep_crawl": true,
+    "headers": {
+      "Accept-Charset": "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
+      "Accept": "*/*",
+      "Cache-Control": "no-cache",
+      "Accept-Encoding": "gzip, deflate, br",
+      "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8,id;q=0.7,ms;q=0.6,su;q=0.5",
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+    },
+    "use_lazy": false,
+    "definition": {
+      "entry_point": {
+        "type": "api",
+        "api": {
+          "url": "https://gql.tokopedia.com/",
+          "method": "POST",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "operationName": "SearchProductQuery",
+            "variables": {
+              "params": "sc={{CATEGORY_ID}}&pmin={{PRICE_MIN}}&pmax={{PRICE_MAX}}&identifier={{CATEGORY_IDENTIFIER}}&st=product&related=true&start={{PAGE_OFFSET}}&page={{PAGE_NUMBER}}&rows={{PAGE_SIZE}}&source=directory&device=desktop&safe_search=false&rt=4,5"
+            },
+            "query": "query SearchProductQuery($params: String) {\r\n  searchProduct(params: $params) {\r\n    source\r\n    totalData: count\r\n    totalDataText: count_text\r\n    isQuerySafe\r\n    products {\r\n      id\r\n      name\r\n      url\r\n      shop {\r\n        id\r\n        name\r\n      }\r\n    }\r\n  }\r\n}\r\n"
+          },
+          "value": {
+            "path": "$.data.searchProduct.products.*.url"
+          }
+        },
+        "page_max": 100,
+        "throttle": 1000,
+        "deep_crawl": {
+          "price_min": 0,
+          "price_max": 0,
+          "price_increment": 10000000,
+          "batch_threshold": 6000,
+          "minimum_price_range": 10,
+          "product_count_path": "$.data.searchProduct.totalData"
+        },
+        "vars": [
+          {
+            "name": "CATEGORY_IDENTIFIER",
+            "type": "regex",
+            "input": "{{URL}}",
+            "value": "www\\.tokopedia\\.com/p/(.*)",
+            "func": "'{{VALUE}}'.replace(/\\//g,'_')"
+          },
+          {
+            "name": "CATEGORY_ID",
+            "type": "api",
+            "async": true,
+            "value": "$",
+            "api": {
+              "url": "https://gql.tokopedia.com/",
+              "method": "POST",
+              "headers": {
+                "Content-Type": "application/json"
+              },
+              "body": {
+                "variables": {
+                  "identifier": "{{CATEGORY_IDENTIFIER}}",
+                  "safeSearch": false,
+                  "intermediary": true
+                },
+                "query": "query CategoryDetailQuery($identifier: String!, $intermediary: Boolean!, $safeSearch: Boolean!) {\n  CategoryDetailQuery: CategoryDetailQueryV3(identifier: $identifier, intermediary: $intermediary, safeSearch: $safeSearch) {\n    header {\n      code\n      serverProcessTime\n      message\n      __typename\n    }\n    data {\n      id\n      name\n      useDiscoPage\n      discoIdentifier\n      url\n      child {\n        id\n        name\n        url\n        thumbnailImage\n        isAdult\n        applinks\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n",
+                "operationName": "CategoryDetailQuery"
+              },
+              "value": {
+                "path": "$.data.CategoryDetailQuery.data.id"
+              }
+            }
+          }
+        ]
+      },
+      "product": {
+        "type": "api",
+        "api": [
+          {
+            "name": "CONTENT_PRODUCT",
+            "url": "https://gql.tokopedia.com/",
+            "method": "POST",
+            "headers": {
+              "Content-Type": "application/json",
+              "x-source": "tokopedia-lite",
+              "x-tkpd-lite-service": "zeus",
+              "x-device": "desktop"
+            },
+            "body": {
+              "variables": {
+                "domain": "{{STORE_ID}}",
+                "shopDomain": "{{STORE_ID}}",
+                "productKey": "{{PRODUCT_ID}}",
+                "fields": [
+                  "allow_manage",
+                  "assets",
+                  "core",
+                  "favorite",
+                  "last_active",
+                  "other-shiploc",
+                  "other-goldos",
+                  "status",
+                  "closed_info"
+                ]
+              },
+              "query": "query PDPInfoQuery($shopDomain: String, $productKey: String) {\n  getPDPInfo(productID: 0, shopDomain: $shopDomain, productKey: $productKey) {\n    basic {\n      id\n      shopID\n      name\n      alias\n      price\n      priceCurrency\n      lastUpdatePrice\n      description\n      minOrder\n      maxOrder\n      status\n      weight\n      weightUnit\n      condition\n      url\n      sku\n      gtin\n      isKreasiLokal\n      isMustInsurance\n      isEligibleCOD\n      isLeasing\n      catalogID\n      needPrescription\n      __typename\n    }\n    category {\n      id\n      name\n      title\n      breadcrumbURL\n      isAdult\n      detail {\n        id\n        name\n        breadcrumbURL\n        __typename\n      }\n      __typename\n    }\n    pictures {\n      picID\n      fileName\n      filePath\n      description\n      isFromIG\n      width\n      height\n      urlOriginal\n      urlThumbnail\n      url300\n      status\n      __typename\n    }\n    preorder {\n      isActive\n      duration\n      timeUnit\n      __typename\n    }\n    wholesale {\n      minQty\n      price\n      __typename\n    }\n    videos {\n      source\n      url\n      __typename\n    }\n    campaign {\n      campaignID\n      campaignType\n      campaignTypeName\n      originalPrice\n      discountedPrice\n      isAppsOnly\n      isActive\n      percentageAmount\n      stock\n      originalStock\n      startDate\n      endDate\n      endDateUnix\n      appLinks\n      hideGimmick\n      __typename\n    }\n    stats {\n      countView\n      countReview\n      countTalk\n      rating\n      __typename\n    }\n    txStats {\n      txSuccess\n      txReject\n      itemSold\n      __typename\n    }\n    variant {\n      parentID\n      isVariant\n      __typename\n    }\n    stock {\n      useStock\n      value\n      stockWording\n      __typename\n    }\n  }\n}",
+              "operationName": "PDPInfoQuery"
+            },
+            "value": {
+              "path": "$.data"
+            }
+          },
+          {
+            "name": "CONTENT_STORE",
+            "url": "https://gql.tokopedia.com/",
+            "method": "POST",
+            "headers": {
+              "Content-Type": "application/json",
+              "x-source": "tokopedia-lite",
+              "x-tkpd-lite-service": "zeus",
+              "x-device": "desktop"
+            },
+            "body": {
+              "variables": {
+                "domain": "{{STORE_ID}}",
+                "shopDomain": "{{STORE_ID}}",
+                "productKey": "{{PRODUCT_ID}}",
+                "fields": [
+                  "allow_manage",
+                  "assets",
+                  "core",
+                  "favorite",
+                  "last_active",
+                  "other-shiploc",
+                  "other-goldos",
+                  "status",
+                  "closed_info"
+                ]
+              },
+              "query": "query PDPShopInfoQuery($fields: [String!]!, $domain: String) {\n  shopInfo: shopInfoByID(input: {shopIDs: [0], fields: $fields, domain: $domain}) {\n    result {\n      favoriteData {\n        alreadyFavorited\n        __typename\n      }\n      goldOS {\n        isGold\n        isGoldBadge\n        isOfficial\n        badgeSVG\n        title\n        __typename\n      }\n      isAllowManage\n      shopLastActive\n      location\n      shippingLoc {\n        districtName\n        cityName\n        __typename\n      }\n      shopAssets {\n        avatar\n        __typename\n      }\n      shopCore {\n        description\n        domain\n        shopID\n        name\n        url\n        __typename\n      }\n      statusInfo {\n        shopStatus\n        statusMessage\n        statusTitle\n        __typename\n      }\n      __typename\n    }\n    error {\n      message\n      __typename\n    }\n    __typename\n  }\n}",
+              "operationName": "PDPShopInfoQuery"
+            },
+            "value": {
+              "path": "$.data"
+            }
+          }
+        ],
+        "throttle": 1000,
+        "vars": [
+          {
+            "name": "PRODUCT_ID",
+            "type": "regex",
+            "input": "{{URL_PRODUCT}}",
+            "value": "\\.tokopedia\\.com/.*?/(.*)"
+          },
+          {
+            "name": "STORE_ID",
+            "type": "regex",
+            "input": "{{URL_PRODUCT}}",
+            "value": "\\.tokopedia\\.com/(.*?)/.*",
+            "func": "'{{VALUE}}'.toLowerCase()"
+          }
+        ]
+      },
+      "vars": [
+        {
+          "name": "PAGE_SIZE",
+          "type": "constant",
+          "value": "60"
+        }
+      ],
+      "product_map": [
+        {
+          "name": "title",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.getPDPInfo.basic.name"
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.getPDPInfo.campaign.discountedPrice"
+        },
+        {
+          "name": "price_original",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.getPDPInfo.basic.price"
+        },
+        {
+          "name": "breadcrumb",
+          "type": "array",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.getPDPInfo.category.detail.*.name"
+        },
+        {
+          "name": "image_primary",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.getPDPInfo.pictures[0].urlOriginal"
+        },
+        {
+          "name": "total_sold",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.getPDPInfo.txStats.itemSold"
+        },
+        {
+          "name": "total_review",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.getPDPInfo.stats.countReview"
+        },
+        {
+          "name": "total_view",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.getPDPInfo.stats.countView"
+        },
+        {
+          "name": "rating",
+          "type": "decimal",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.getPDPInfo.stats.rating",
+          "value": "{{VALUE}}/20"
+        },
+        {
+          "name": "seller_name",
+          "source": "CONTENT_STORE",
+          "path": "$.shopInfo.result[0].shopCore.name"
+        },
+        {
+          "name": "seller_location",
+          "source": "CONTENT_STORE",
+          "path": "$.shopInfo.result[0].shippingLoc.cityName"
+        },
+        {
+          "name": "seller_is_official",
+          "type": "boolean",
+          "source": "CONTENT_STORE",
+          "path": "$.shopInfo.result[0].goldOS.isOfficial"
+        }
+      ]
+    }
+  }
+}

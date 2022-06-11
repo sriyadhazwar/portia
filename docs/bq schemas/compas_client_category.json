@@ -1,0 +1,16 @@
+[
+  {
+    "name": "client_id",
+    "type": "INTEGER",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "category_id",
+    "type": "INTEGER",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "created_at",
+    "type": "TIMESTAMP"
+  }
+]

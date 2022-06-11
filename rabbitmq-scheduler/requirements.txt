@@ -1,0 +1,3 @@
+AMQPStorm==2.8.3
+pamqp==2.3.0
+python-dotenv==0.15.0

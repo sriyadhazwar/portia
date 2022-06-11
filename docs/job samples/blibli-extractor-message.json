@@ -1,0 +1,186 @@
+{
+  "job": {
+    "total_product": 0,
+    "total_processed": 0,
+    "_id": "5f8698371bc47392d0380344",
+    "name": "Blibli RUN",
+    "url": "https://www.blibli.com/c/3/nursing-cover-bantal-menyusui/BA-1000053/55076",
+    "driver_id": "5f8697fc1bc47392d0380343",
+    "created_at": "2021-01-19T06:18:31.828Z",
+    "status": "waiting",
+    "__v": 0,
+    "root": false
+  },
+  "driver": {
+    "_id": "5f8697fc1bc47392d0380343",
+    "site_id": 38,
+    "name": "Blibli - Category",
+    "url": "https://blibli.com/",
+    "type": "api",
+    "use_proxy": false,
+    "proxy_credential": "false",
+    "deep_crawl": true,
+    "use_lazy": false,
+    "definition": {
+      "entry_point": {
+        "type": "api",
+        "api": {
+          "url": "https://www.blibli.com/backend/search/products?page={{PAGE_NUMBER}}&start={{PAGE_OFFSET}}&category={{CATEGORY_ID}}&sort=7&intent=false&rating=4&minPrice={{PRICE_MIN}}&maxPrice={{PRICE_MAX}}&channelId=web&showFacet=true",
+          "method": "GET",
+          "headers": null,
+          "value": {
+            "path": "$.data.products.*",
+            "format": "https://blibli.com/p/{{PRODUCT_NAME_SLUGIFY}}/{{PRODUCT_ID}}?",
+            "vars": {
+              "PRODUCT_NAME_SLUGIFY": "$.name",
+              "PRODUCT_ID": "$.formattedId"
+            }
+          }
+        },
+        "page_max": 20,
+        "throttle": 100,
+        "deep_crawl": {
+          "price_min": 0,
+          "price_max": 0,
+          "price_increment": 200000,
+          "batch_threshold": 800,
+          "minimum_price_range": 10,
+          "product_count_path": "$.paging.total_item"
+        }
+      },
+      "product": {
+        "type": "api",
+        "api": [
+          {
+            "name": "CONTENT_PRODUCT",
+            "url": "https://www.blibli.com/backend/product-detail/products/{{PRODUCT_ID}}/_summary",
+            "method": "GET",
+            "headers": null,
+            "value": {
+              "path": "$"
+            }
+          }
+        ],
+        "throttle": 100
+      },
+      "product_map": [
+        {
+          "name": "sku",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.itemSku"
+        },
+        {
+          "name": "title",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.name"
+        },
+        {
+          "name": "brand",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.brand.name"
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.price.offered",
+          "value": "{{VALUE}}"
+        },
+        {
+          "name": "price_original",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.price.listed",
+          "value": "{{VALUE}}"
+        },
+        {
+          "name": "breadcrumb",
+          "type": "array",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.categories.*.name"
+        },
+        {
+          "name": "image_primary",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.images[0].full",
+          "value": "{{VALUE}}"
+        },
+        {
+          "name": "total_stock",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.stock"
+        },
+        {
+          "name": "total_review",
+          "type": "number",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.review.count"
+        },
+        {
+          "name": "rating",
+          "type": "decimal",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.review.decimalRating"
+        },
+        {
+          "name": "seller_name",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.merchant.name"
+        },
+        {
+          "name": "seller_location",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.merchant.location"
+        },
+        {
+          "name": "seller_rating",
+          "type": "decimal",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.merchant.rating.value"
+        },
+        {
+          "name": "seller_is_official",
+          "type": "boolean",
+          "source": "CONTENT_PRODUCT",
+          "path": "$.data.merchant.official"
+        }
+      ],
+      "vars": [
+        {
+          "name": "CATEGORY_ID",
+          "type": "regex",
+          "input": "{{URL}}",
+          "value": "blibli\\.com.*\\/\\w\\/\\d\\/.+\\/(.+)\\/(.+)",
+          "args": {
+            "group": 1
+          }
+        },
+        {
+          "name": "PRODUCT_ID",
+          "type": "regex",
+          "input": "{{URL_PRODUCT}}",
+          "value": "blibli\\.com/\\w/.+\\/(.+)",
+          "args": {
+            "group": 1
+          }
+        },
+        {
+          "name": "PAGE_SIZE",
+          "type": "constant",
+          "value": "40"
+        },
+        {
+          "name": "PAGE_NUMBER",
+          "type": "constant",
+          "value": 2
+        }
+      ]
+    }
+  },
+  "product": {
+    "url": "https://blibli.com/p/FS-Baby-Inc-Official-Shop-Nursing-Arm-Pillow-Happy-Zoo-Bantal-Tangan-Menyusui/ps--BAI-60042-00035",
+    "content": "[{\"name\":\"CONTENT_PRODUCT\",\"content\":\"{\\\"code\\\":200,\\\"status\\\":\\\"OK\\\",\\\"data\\\":{\\\"url\\\":\\\"https://www.blibli.com/p/fs-baby-inc-official-shop-nursing-arm-pillow-happy-zoo-bantal-tangan-menyusui/ps--BAI-60042-00035\\\",\\\"itemSku\\\":\\\"BAI-60042-00035-00001\\\",\\\"name\\\":\\\"FS - Baby Inc Official Shop Nursing Arm Pillow Happy Zoo Bantal Tangan Menyusui\\\",\\\"productSku\\\":\\\"BAI-60042-00035\\\",\\\"productCode\\\":\\\"MTA-3449003\\\",\\\"itemCode\\\":\\\"MTA-3449003-00001\\\",\\\"ean\\\":\\\"Happy Zoo\\\",\\\"urlFriendlyName\\\":\\\"fs-baby-inc-official-shop-nursing-arm-pillow-happy-zoo-bantal-tangan-menyusui\\\",\\\"stock\\\":1,\\\"stockLimitedThreshold\\\":6,\\\"uniqueSellingPoint\\\":\\\"<ul>\\\\n<li>Bantal tangan menyusui</li>\\\\n<li>Dapat membantu memposisikan buah hati Anda secara benar dan nyaman pada saat menyusui, sehingga proses menyusui dapat menjadi momen yang lebih spesial dan menyenangkan</li>\\\\n<li>Cocok digunakan untuk menyangga kepala pada saat menyusui dengan posisi menyamping atau juga sebagai&nbsp;<em>travelling pillow</em></li>\\\\n<li>Terbuat dari bahan yang halus untuk kulit bayi</li>\\\\n<li>Mudah dicuci berulang kali</li>\\\\n</ul>\\\",\\\"ampUrl\\\":\\\"https://www.blibli.com/amp/p/fs-baby-inc-official-shop-nursing-arm-pillow-happy-zoo-bantal-tangan-menyusui/ps--BAI.60042.00035\\\",\\\"price\\\":{\\\"listed\\\":149000,\\\"listDiscount\\\":50,\\\"offered\\\":74500},\\\"brand\\\":{\\\"name\\\":\\\"Baby Inc Official Shop\\\",\\\"code\\\":\\\"baby-inc-official-shop\\\",\\\"official\\\":false,\\\"anchor\\\":\\\"\\\"},\\\"images\\\":[{\\\"full\\\":\\\"https://www.static-src.com/wcsstore/Indraprastha/images/catalog/full//88/MTA-3449003/baby-inc-official-shop_baby-inc-official-shop-nursing-arm-pillow-happy-zoo-bantal-tangan-menyusui_full03.jpg\\\",\\\"thumbnail\\\":\\\"https://www.static-src.com/wcsstore/Indraprastha/images/catalog/thumbnail//88/MTA-3449003/baby-inc-official-shop_baby-inc-official-shop-nursing-arm-pillow-happy-zoo-bantal-tangan-menyusui_full03.jpg\\\"},{\\\"full\\\":\\\"https://www.static-src.com/wcsstore/Indraprastha/images/catalog/full//88/MTA-3449003/baby-inc-official-shop_baby-inc-official-shop-nursing-arm-pillow-happy-zoo-bantal-tangan-menyusui_full04.jpg\\\",\\\"thumbnail\\\":\\\"https://www.static-src.com/wcsstore/Indraprastha/images/catalog/thumbnail//88/MTA-3449003/baby-inc-official-shop_baby-inc-official-shop-nursing-arm-pillow-happy-zoo-bantal-tangan-menyusui_full04.jpg\\\"}],\\\"tags\\\":[\\\"AVAILABLE\\\",\\\"LIMITED\\\",\\\"RETURNABLE\\\",\\\"INSTALLMENT_NON_CC\\\"],\\\"warranty\\\":{},\\\"expiration\\\":{},\\\"type\\\":\\\"REGULAR\\\",\\\"attributes\\\":[{\\\"name\\\":\\\"Warna\\\",\\\"type\\\":\\\"IMAGE\\\",\\\"values\\\":[{\\\"image\\\":\\\"https://www.static-src.com/wcsstore/Indraprastha/images/catalog/thumbnail//88/MTA-3449003/baby-inc-official-shop_baby-inc-official-shop-nursing-arm-pillow-happy-zoo-bantal-tangan-menyusui_full03.jpg\\\",\\\"value\\\":\\\"White Orange\\\"}]}],\\\"options\\\":[{\\\"id\\\":\\\"is--BAI-60042-00035-00001\\\",\\\"selected\\\":true,\\\"available\\\":true,\\\"attributes\\\":[{\\\"name\\\":\\\"Warna\\\",\\\"value\\\":\\\"White Orange\\\"}]}],\\\"categories\\\":[{\\\"level\\\":1,\\\"id\\\":\\\"55076\\\",\\\"name\\\":\\\"Ibu & Anak\\\"},{\\\"level\\\":2,\\\"id\\\":\\\"IB-1000002\\\",\\\"name\\\":\\\"Ibu Hamil & Menyusui\\\"},{\\\"level\\\":3,\\\"id\\\":\\\"BA-1000053\\\",\\\"name\\\":\\\"Nursing Cover & Bantal Menyusui\\\"}],\\\"masterCategories\\\":[{\\\"level\\\":1,\\\"id\\\":\\\"IB-1000004\\\",\\\"name\\\":\\\"Ibu & Anak\\\"},{\\\"level\\\":2,\\\"id\\\":\\\"IB-1000005\\\",\\\"name\\\":\\\"Ibu Hamil & Menyusui\\\"},{\\\"level\\\":3,\\\"id\\\":\\\"BA-1000142\\\",\\\"name\\\":\\\"Nursing Cover & Bantal Menyusui\\\"}],\\\"merchant\\\":{\\\"name\\\":\\\"BABY INC STORE\\\",\\\"code\\\":\\\"BAI-60042\\\",\\\"rating\\\":{\\\"value\\\":90,\\\"badge\\\":\\\"NONE\\\"},\\\"international\\\":false,\\\"official\\\":false,\\\"location\\\":\\\"Kota Jakarta Utara, DKI Jakarta\\\",\\\"warehouses\\\":[],\\\"url\\\":\\\"/merchant/baby-inc-store/BAI-60042\\\",\\\"commissionType\\\":\\\"CM\\\"},\\\"review\\\":{\\\"rating\\\":5,\\\"count\\\":1,\\\"decimalRating\\\":5},\\\"shippingAddress\\\":{\\\"provinceName\\\":\\\"DKI Jakarta\\\",\\\"subdistrictName\\\":\\\"Slipi\\\",\\\"postalCode\\\":\\\"11410\\\",\\\"districtName\\\":\\\"Palmerah\\\",\\\"cityName\\\":\\\"Kota Jakarta Barat\\\"}}}\"}]",
+    "type": "json"
+  }
+}

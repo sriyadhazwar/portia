@@ -1,0 +1,157 @@
+{
+    "_id": "5f8697fc1bc47392d0380345",
+    "site_id": 38,
+    "name": "Blibli - Category Deep",
+    "url": "https://blibli.com/",
+    "type": "api",
+    "use_proxy": false,
+    "proxy_credential": "false",
+    "deep_crawl": true,
+    "use_lazy": false,
+    "headers":
+    {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36",
+        "accept": "*/*",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "keep-alive"
+    },
+    "definition":
+    {
+        "entry_point": null,
+        "product":
+        {
+            "type": "api",
+            "api":
+            [
+                {
+                    "name": "CONTENT_PRODUCT",
+                    "url": "https://www.blibli.com/backend/product-detail/products/{{PRODUCT_ID}}/_summary",
+                    "method": "GET",
+                    "headers": null,
+                    "value":
+                    {
+                        "path": "$"
+                    }
+                }
+            ],
+            "throttle": 100
+        },
+        "product_map":
+        [
+            {
+                "name": "sku",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.data.itemSku"
+            },
+            {
+                "name": "title",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.data.name"
+            },
+            {
+                "name": "brand",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.data.brand.name"
+            },
+            {
+                "name": "price",
+                "type": "number",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.data.price.offered",
+                "value": "{{VALUE}}"
+            },
+            {
+                "name": "price_original",
+                "type": "number",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.data.price.listed",
+                "value": "{{VALUE}}"
+            },
+            {
+                "name": "image_primary",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.data.images[0].full",
+                "value": "{{VALUE}}"
+            },
+            {
+                "name": "total_stock",
+                "type": "number",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.data.stock"
+            },
+            {
+                "name": "total_sold",
+                "type": "number",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.data.statistics.sold"
+            },
+            {
+                "name": "seller_code",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.data.merchant.code"
+            },
+            {
+                "name": "total_review",
+                "type": "number",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.data.review.count"
+            },
+            {
+                "name": "rating",
+                "type": "decimal",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.data.review.decimalRating"
+            },
+            {
+                "name": "seller_name",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.data.merchant.name"
+            },
+            {
+                "name": "seller_location",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.data.merchant.location"
+            },
+            {
+                "name": "seller_rating",
+                "type": "decimal",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.data.merchant.rating.value"
+            },
+            {
+                "name": "seller_is_official",
+                "type": "boolean",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.data.merchant.official"
+            }
+        ],
+        "vars":
+        [
+            {
+                "name": "CATEGORY_ID",
+                "type": "regex",
+                "input": "{{URL}}",
+                "value": "blibli\\.com\\/c\\/\\d+\\/.*?\\/(.*)?\\/",
+                "args":
+                {
+                    "group": 1
+                }
+            },
+            {
+                "name": "PRODUCT_ID",
+                "type": "regex",
+                "input": "{{URL_PRODUCT}}",
+                "value": "blibli\\.com\\/.*/(.+)",
+                "args":
+                {
+                    "group": 1
+                }
+            },
+            {
+                "name": "PAGE_SIZE",
+                "type": "constant",
+                "value": "40"
+            }
+        ]
+    }
+}

@@ -1,0 +1,240 @@
+{
+  "_id": "5f8697fc1bc47392d0380342",
+  "site_id": 24,
+  "name": "Tokopedia - Product Keyword",
+  "url": "https://www.tokopedia.com",
+  "type": "api",
+  "use_proxy": false,
+  "proxy_credential": "false",
+  "deep_crawl": true,
+  "headers": {
+      "Accept-Charset": "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
+      "Accept": "*/*",
+      "Cache-Control": "no-cache",
+      "Accept-Encoding": "gzip, deflate, br",
+      "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8,id;q=0.7,ms;q=0.6,su;q=0.5",
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+  },
+  "use_lazy": false,
+  "definition": {
+      "entry_point": {
+          "type": "api",
+          "api": {
+              "url": "https://gql.tokopedia.com/",
+              "method": "POST",
+              "headers": {
+                  "Content-Type": "application/json"
+              },
+              "body": {
+                  "operationName": "SearchProductQuery",
+                  "variables": {
+                      "params": "q={{PRODUCT_NAME}}&pmin={{PRICE_MIN}}&pmax={{PRICE_MAX}}&st=product&related=true&start={{PAGE_OFFSET}}&page={{PAGE_NUMBER}}&rows={{PAGE_SIZE}}&source=directory&device=desktop&safe_search=false"
+                  },
+                  "query": "query SearchProductQuery($params: String) {\r\n  searchProduct(params: $params) {\r\n    source\r\n    totalData: count\r\n    totalDataText: count_text\r\n    isQuerySafe\r\n    products {\r\n      id\r\n      name\r\n      url\r\n      shop {\r\n        id\r\n        name\r\n      }\r\n    }\r\n  }\r\n}\r\n"
+              },
+              "value": {
+                  "path": "$.data.searchProduct.products.*.url"
+              }
+          },
+          "page_max": 100,
+          "throttle": 50,
+          "deep_crawl": {
+              "price_min": 0,
+              "price_max": 0,
+              "price_increment": 10000000,
+              "batch_threshold": 6000,
+              "minimum_price_range": 10,
+              "product_count_path": "$.data.searchProduct.totalData"
+          },
+          "vars": [
+              {
+                  "name": "PRODUCT_NAME",
+                  "type": "regex",
+                  "input": "{{URL}}",
+                  "value": "tokopedia\\.com\\/search.*q=([^&]*)",
+                  "args": {
+                      "group": 1
+                  }
+              }
+          ]
+      },
+      "product": {
+          "type": "api",
+          "api": [
+              {
+                  "name": "CONTENT_PRODUCT",
+                  "url": "https://gql.tokopedia.com/",
+                  "method": "POST",
+                  "headers": {
+                      "Content-Type": "application/json",
+                      "x-source": "tokopedia-lite",
+                      "x-tkpd-lite-service": "zeus",
+                      "x-device": "desktop"
+                  },
+                  "body": {
+                      "variables": {
+                          "domain": "{{STORE_ID}}",
+                          "shopDomain": "{{STORE_ID}}",
+                          "productKey": "{{PRODUCT_ID}}",
+                          "fields": [
+                              "allow_manage",
+                              "assets",
+                              "core",
+                              "favorite",
+                              "last_active",
+                              "other-shiploc",
+                              "other-goldos",
+                              "status",
+                              "closed_info"
+                          ]
+                      },
+                      "query": "query PDPInfoQuery($shopDomain: String $productKey: String) { getPDPInfo(productID: 0 shopDomain: $shopDomain productKey: $productKey) { basic { id shopID name alias price priceCurrency lastUpdatePrice description minOrder maxOrder status weight weightUnit condition url sku gtin isKreasiLokal isMustInsurance isEligibleCOD isLeasing catalogID needPrescription __typename } category { id name title breadcrumbURL isAdult detail { id name breadcrumbURL __typename } __typename } pictures { picID fileName filePath description isFromIG width height urlOriginal urlThumbnail url300 status __typename } preorder { isActive duration timeUnit __typename } wholesale { minQty price __typename } videos { source url __typename } campaign { campaignID campaignType campaignTypeName originalPrice discountedPrice isAppsOnly isActive percentageAmount stock originalStock startDate endDate endDateUnix appLinks hideGimmick __typename } stats { countView countReview countTalk rating __typename } txStats { txSuccess txReject itemSold itemSoldPaymentVerified __typename } variant { parentID isVariant __typename } stock { useStock value stockWording __typename } } }",
+                      "operationName": "PDPInfoQuery"
+                  },
+                  "value": {
+                      "path": "$.data"
+                  }
+              },
+              {
+                  "name": "CONTENT_STORE",
+                  "url": "https://gql.tokopedia.com/",
+                  "method": "POST",
+                  "headers": {
+                      "Content-Type": "application/json",
+                      "x-source": "tokopedia-lite",
+                      "x-tkpd-lite-service": "zeus",
+                      "x-device": "desktop"
+                  },
+                  "body": {
+                      "variables": {
+                          "domain": "{{STORE_ID}}",
+                          "shopDomain": "{{STORE_ID}}",
+                          "productKey": "{{PRODUCT_ID}}",
+                          "fields": [
+                              "allow_manage",
+                              "assets",
+                              "core",
+                              "favorite",
+                              "last_active",
+                              "other-shiploc",
+                              "other-goldos",
+                              "status",
+                              "closed_info"
+                          ]
+                      },
+                      "query": "query PDPShopInfoQuery($fields: [String!]!, $domain: String) {\n  shopInfo: shopInfoByID(input: {shopIDs: [0], fields: $fields, domain: $domain}) {\n    result {\n      favoriteData {\n        alreadyFavorited\n        __typename\n      }\n      goldOS {\n        isGold\n        isGoldBadge\n        isOfficial\n        badgeSVG\n        title\n        __typename\n      }\n      isAllowManage\n      shopLastActive\n      location\n      shippingLoc {\n        districtName\n        cityName\n        __typename\n      }\n      shopAssets {\n        avatar\n        __typename\n      }\n      shopCore {\n        description\n        domain\n        shopID\n        name\n        url\n        __typename\n      }\n      statusInfo {\n        shopStatus\n        statusMessage\n        statusTitle\n        __typename\n      }\n      __typename\n    }\n    error {\n      message\n      __typename\n    }\n    __typename\n  }\n}",
+                      "operationName": "PDPShopInfoQuery"
+                  },
+                  "value": {
+                      "path": "$.data"
+                  }
+              }
+          ],
+          "throttle": 50,
+          "vars": [
+              {
+                  "name": "PRODUCT_ID",
+                  "type": "regex",
+                  "input": "{{URL_PRODUCT}}",
+                  "value": "\\.tokopedia\\.com/.*?/(.*)"
+              },
+              {
+                  "name": "STORE_ID",
+                  "type": "regex",
+                  "input": "{{URL_PRODUCT}}",
+                  "value": "\\.tokopedia\\.com/(.*?)/.*"
+              }
+          ]
+      },
+      "vars": [
+          {
+              "name": "PAGE_SIZE",
+              "type": "constant",
+              "value": "60"
+          }
+      ],
+      "product_map": [
+          {
+              "name": "sku",
+              "source": "CONTENT_PRODUCT",
+              "path": "$.getPDPInfo.basic.id"
+          },
+          {
+              "name": "title",
+              "source": "CONTENT_PRODUCT",
+              "path": "$.getPDPInfo.basic.name"
+          },
+          {
+              "name": "price",
+              "type": "number",
+              "source": "CONTENT_PRODUCT",
+              "path": "$.getPDPInfo.campaign.discountedPrice"
+          },
+          {
+              "name": "price_original",
+              "type": "number",
+              "source": "CONTENT_PRODUCT",
+              "path": "$.getPDPInfo.basic.price"
+          },
+          {
+              "name": "breadcrumb",
+              "type": "array",
+              "source": "CONTENT_PRODUCT",
+              "path": "$.getPDPInfo.category.detail.*.name"
+          },
+          {
+              "name": "image_primary",
+              "source": "CONTENT_PRODUCT",
+              "path": "$.getPDPInfo.pictures[0].urlOriginal"
+          },
+          {
+              "name": "total_sold",
+              "type": "number",
+              "source": "CONTENT_PRODUCT",
+              "path": "$.getPDPInfo.txStats.itemSoldPaymentVerified"
+          },
+          {
+              "name": "total_review",
+              "type": "number",
+              "source": "CONTENT_PRODUCT",
+              "path": "$.getPDPInfo.stats.countReview"
+          },
+          {
+              "name": "total_view",
+              "type": "number",
+              "source": "CONTENT_PRODUCT",
+              "path": "$.getPDPInfo.stats.countView"
+          },
+          {
+              "name": "rating",
+              "type": "decimal",
+              "source": "CONTENT_PRODUCT",
+              "path": "$.getPDPInfo.stats.rating",
+              "value": "{{VALUE}}/20"
+          },
+          {
+              "name": "is_new",
+              "type": "boolean",
+              "source": "CONTENT_PRODUCT",
+              "path": "$.getPDPInfo.basic.condition",
+              "value": "('{{VALUE}}' == 'NEW')"
+          },
+          {
+              "name": "seller_name",
+              "source": "CONTENT_STORE",
+              "path": "$.shopInfo.result[0].shopCore.name"
+          },
+          {
+              "name": "seller_location",
+              "source": "CONTENT_STORE",
+              "path": "$.shopInfo.result[0].shippingLoc.cityName"
+          },
+          {
+              "name": "seller_is_official",
+              "type": "boolean",
+              "source": "CONTENT_STORE",
+              "path": "$.shopInfo.result[0].goldOS.isOfficial"
+          }
+      ]
+  }
+}

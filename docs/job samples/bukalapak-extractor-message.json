@@ -1,0 +1,215 @@
+{
+  "job": {
+    "total_product": 0,
+    "total_processed": 0,
+    "_id": "5f8698371bc47392d038034B",
+    "name": "Test Run",
+    "url": "https://www.bukalapak.com/c/perlengkapan-bayi/diapering",
+    "driver_id": "5f8697fc1bc47392d0380341",
+    "created_at": "2020-10-14T06:18:31.828Z",
+    "status": "waiting",
+    "__v": 0
+  },
+  "driver": {
+    "_id": "5f8697fc1bc47392d0380342",
+    "site_id": 439,
+    "name": "Bukalapak - Category",
+    "url": "https://www.bukalapak.com/",
+    "type": "api",
+    "use_proxy": false,
+    "proxy_credential": "false",
+    "deep_crawl": true,
+    "headers": {
+      "Accept-Charset": "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
+      "Accept": "*/*",
+      "Cache-Control": "no-cache",
+      "Accept-Encoding": "gzip, deflate, br",
+      "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8,id;q=0.7,ms;q=0.6,su;q=0.5",
+      "User-Agent": "Telunjukbot/1.0; +https://www.telunjuk.com/about"
+    },
+    "use_lazy": false,
+    "definition": {
+      "entry_point": {
+        "type": "api",
+        "api": {
+          "url": "https://api.bukalapak.com/multistrategy-products?prambanan_override=true&access_token={{ACCESS_TOKEN}}&offset={{PAGE_OFFSET}}&category_id={{CATEGORY_ID}}&limit={{PAGE_SIZE}}&price_range={{PRICE_MIN}}:{{PRICE_MAX}}&page={{PAGE_NUMBER}}&sort=bestratingratio&facet=true",
+          "method": "GET",
+          "headers": null,
+          "value": {
+            "path": "$.data.*.url"
+          }
+        },
+        "page_max": 100,
+        "throttle": 100,
+        "deep_crawl": {
+          "price_min": 0,
+          "price_max": 0,
+          "price_increment": 50000,
+          "batch_threshold": 3000,
+          "minimum_price_range": 100,
+          "product_count_path": "$.meta.total"
+        },
+        "vars": [
+          {
+            "name": "CATEGORY_ID",
+            "type": "api",
+            "async": true,
+            "value": "$",
+            "api": {
+              "url": "https://api.bukalapak.com/categories/permalink/{{CATEGORY}}?access_token={{ACCESS_TOKEN}}",
+              "method": "GET",
+              "headers": null,
+              "value": {
+                "path": "$.data.id"
+              }
+            }
+          },
+          {
+            "name": "CATEGORY",
+            "type": "regex",
+            "input": "{{URL}}",
+            "value": "https://www\\.bukalapak\\.com/c/(.*)",
+            "args": {
+              "group": 1
+            }
+          }
+        ]
+      },
+      "product": {
+        "type": "api",
+        "api": [
+          {
+            "url": "https://api.bukalapak.com/products/{{PRODUCT_ID}}?access_token={{ACCESS_TOKEN}}",
+            "method": "GET",
+            "headers": null,
+            "value": {
+              "path": "$.data"
+            }
+          }
+        ],
+        "throttle": 100,
+        "vars": [
+          {
+            "name": "PRODUCT_ID",
+            "type": "regex",
+            "input": "{{URL_PRODUCT}}",
+            "value": "bukalapak\\.com/p/.*/(.*?)-",
+            "args": {
+              "group": 1
+            }
+          }
+        ]
+      },
+      "vars": [
+        {
+          "name": "ACCESS_TOKEN",
+          "type": "api",
+          "async": true,
+          "value": "$",
+          "api": {
+            "url": "https://www.bukalapak.com/westeros_auth_proxies",
+            "method": "POST",
+            "headers": null,
+            "value": {
+              "path": "$.access_token"
+            }
+          }
+        },
+        {
+          "name": "PRICE_MIN",
+          "type": "constant",
+          "value": "0"
+        },
+        {
+          "name": "PRICE_MAX",
+          "type": "constant",
+          "value": "12500"
+        },
+        {
+          "name": "PAGE_NUMBER",
+          "type": "constant",
+          "value": 2
+        }
+      ],
+      "product_map": [
+        {
+          "name": "title",
+          "path": "$.name"
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "path": "$.price"
+        },
+        {
+          "name": "price_original",
+          "type": "number",
+          "path": "$.deal.original_price"
+        },
+        {
+          "name": "breadcrumb",
+          "type": "array",
+          "path": "$.category.structure.*"
+        },
+        {
+          "name": "image_primary",
+          "path": "$.images.large_urls[0]"
+        },
+        {
+          "name": "is_new",
+          "type": "boolean",
+          "path": "$.condition",
+          "value": "'{{VALUE}}' == 'Baru'"
+        },
+        {
+          "name": "total_sold",
+          "type": "number",
+          "path": "$.stats.sold_count"
+        },
+        {
+          "name": "total_stock",
+          "type": "number",
+          "path": "$.stock"
+        },
+        {
+          "name": "total_review",
+          "type": "number",
+          "path": "$.rating.user_count"
+        },
+        {
+          "name": "total_view",
+          "type": "number",
+          "path": "$.stats.view_count"
+        },
+        {
+          "name": "rating",
+          "type": "decimal",
+          "path": "$.rating.average_rate"
+        },
+        {
+          "name": "seller_name",
+          "path": "$.store.name"
+        },
+        {
+          "name": "seller_location",
+          "path": "$.store.address.city"
+        },
+        {
+          "name": "seller_rating",
+          "type": "decimal",
+          "path": "$.data.account.total_avg_star"
+        },
+        {
+          "name": "seller_is_official",
+          "type": "boolean",
+          "path": "$.store.brand_seller"
+        }
+      ]
+    }
+  },
+  "product": {
+    "url": "https://www.bukalapak.com/p/perlengkapan-bayi/diapering/1dfszww-jual-popok-bayi-tipe-celana-singgle-pads-size-xl-isi-6pcs",
+    "content": "[{\"name\":\"DEFAULT\",\"content\":\"{\\\"active\\\":true,\\\"assurance\\\":true,\\\"available_countries\\\":[],\\\"category\\\":{\\\"id\\\":651,\\\"name\\\":\\\"Diapering\\\",\\\"structure\\\":[\\\"Perlengkapan Bayi\\\",\\\"Diapering\\\"],\\\"url\\\":\\\"https://www.bukalapak.com/c/perlengkapan-bayi/diapering\\\"},\\\"condition\\\":\\\"Baru\\\",\\\"created_at\\\":\\\"2019-03-14T07:05:36Z\\\",\\\"deal\\\":{\\\"applied_date\\\":\\\"2020-11-04T17:00:00Z\\\",\\\"discount_price\\\":12193,\\\"expired_date\\\":\\\"2020-12-01T16:59:59Z\\\",\\\"original_price\\\":13700,\\\"percentage\\\":11},\\\"default_catalog\\\":null,\\\"description\\\":\\\"Jenis Pants / Celana RENCENG<br/>Popoku Pants adalah Popok jenis celana yang nyaman untuk bayi. Terbuat dari bahan dengan kualitas bagus untuk memastikan kenyamanan dan kesehatan kulit bayi Anda. Popoku juga sudah mengantongi sertifikat Halal dan juga Sertifikat dari Dinkes. Sehingga sangat aman untuk di gunakan. Sangat Praktis<br/><br/>\\\\tBREATHABLE SYSTEM<br/>Bahan yang digunakan memiliki emboss untuk sirkulasi udara, agar pada saat digunakan pada bayi tidak mudah lembab<br/><br/>\\\\tANTI BACTERIAL SYSTEM<br/>Hanya menggunakan material yang hygiene, sehingga bayi tidak mudah iritasi<br/>\\\\tEXTRA ABSORBENCY<br/>Dapat menyerap kencing bayi secara maximal, sehingga bayi tetap nyaman, kulit bayi tetap lembut dan terhindar dari iritasi.<br/>\\\\tWETNESS INDICATOR SYSTEM<br/>Mempermudah untuk mengetahui popok tersebut sudah penuh dan waktunya harus diganti.\\\",\\\"digital_product\\\":false,\\\"for_sale\\\":true,\\\"id\\\":\\\"1dfszww\\\",\\\"images\\\":{\\\"large_urls\\\":[\\\"https://s1.bukalapak.com/img/64576821901/large/Popok_Bayi_Tipe_Celana_SINGGLE_PADS_Size_XL_isi_6pcs.jpg\\\",\\\"https://s1.bukalapak.com/img/13557821901/large/Popok_Bayi_Tipe_Celana_SINGGLE_PADS_Size_XL_isi_6pcs.jpg\\\",\\\"https://s3.bukalapak.com/img/8516841477/large/Popok_Bayi_Tipe_Celana_SINGGLE_PADS_Size_XL_isi_6pcs.jpg\\\",\\\"https://s1.bukalapak.com/img/14567821901/large/Popok_Bayi_Tipe_Celana_SINGGLE_PADS_Size_XL_isi_6pcs.jpg\\\"],\\\"small_urls\\\":[\\\"https://s1.bukalapak.com/img/64576821901/small/Popok_Bayi_Tipe_Celana_SINGGLE_PADS_Size_XL_isi_6pcs.jpg\\\",\\\"https://s1.bukalapak.com/img/13557821901/small/Popok_Bayi_Tipe_Celana_SINGGLE_PADS_Size_XL_isi_6pcs.jpg\\\",\\\"https://s3.bukalapak.com/img/8516841477/small/Popok_Bayi_Tipe_Celana_SINGGLE_PADS_Size_XL_isi_6pcs.jpg\\\",\\\"https://s1.bukalapak.com/img/14567821901/small/Popok_Bayi_Tipe_Celana_SINGGLE_PADS_Size_XL_isi_6pcs.jpg\\\"]},\\\"imported\\\":false,\\\"installments\\\":[],\\\"max_quantity\\\":2147483647,\\\"merchant_return_insurance\\\":false,\\\"min_quantity\\\":1,\\\"name\\\":\\\"Popok Bayi Tipe Celana SINGGLE PADS Size XL isi 6pcs\\\",\\\"price\\\":12193,\\\"product_sin\\\":[],\\\"rating\\\":{\\\"average_rate\\\":4.9,\\\"user_count\\\":64},\\\"relisted_at\\\":\\\"2020-09-28T06:25:59Z\\\",\\\"rush_delivery\\\":false,\\\"shipping\\\":{\\\"force_insurance\\\":false,\\\"free_shipping_coverage\\\":[]},\\\"sku_id\\\":2997840136,\\\"sla\\\":{\\\"type\\\":\\\"\\\",\\\"value\\\":0},\\\"special_campaign_id\\\":3892,\\\"specs\\\":{\\\"brand\\\":\\\"Popoku\\\"},\\\"state\\\":\\\"available\\\",\\\"state_description\\\":[],\\\"stats\\\":{\\\"interest_count\\\":10,\\\"sold_count\\\":119,\\\"view_count\\\":0,\\\"waiting_payment_count\\\":-168},\\\"stock\\\":939,\\\"store\\\":{\\\"address\\\":{\\\"city\\\":\\\"Kab. Tangerang\\\",\\\"province\\\":\\\"Banten\\\"},\\\"alert\\\":\\\"\\\",\\\"avatar_url\\\":\\\"https://s3.bukalapak.com/avt/84446143/small/Logo_Popoku.jpg\\\",\\\"brand_seller\\\":true,\\\"carriers\\\":[\\\"SiCepat REG\\\",\\\"SiCepat HALU\\\",\\\"NINJA REG\\\",\\\"J&T REG\\\",\\\"JNE REG\\\",\\\"JNE Trucking\\\",\\\"TIKI Reg\\\",\\\"Pos Kilat Khusus\\\",\\\"GO-SEND Instant\\\",\\\"GO-SEND Same Day\\\",\\\"Grab Same Day\\\",\\\"Ambil Sendiri\\\",\\\"Bayar di Tempat (COD)\\\"],\\\"closing\\\":{\\\"closed\\\":false},\\\"delivery_time\\\":\\\"1-2 hari\\\",\\\"description\\\":\\\"Popoku menyapa masyarakat\\\",\\\"first_upload_product_at\\\":\\\"2018-05-22T13:35:56.000+07:00\\\",\\\"flagship\\\":false,\\\"groups\\\":[],\\\"header_image\\\":{\\\"url\\\":\\\"https://s2.bukalapak.com/hdr/75483483/normal/fcfbd16a2f617ab3165c.\\\"},\\\"id\\\":83731715,\\\"inactivity\\\":{\\\"inactive\\\":false,\\\"last_appear_at\\\":\\\"2020-11-19T09:31:25.000+07:00\\\"},\\\"last_order_schedule\\\":{\\\"friday\\\":\\\"15:00\\\",\\\"monday\\\":\\\"15:00\\\",\\\"thursday\\\":\\\"15:00\\\",\\\"tuesday\\\":\\\"15:00\\\",\\\"wednesday\\\":\\\"15:00\\\"},\\\"level\\\":{\\\"image_url\\\":\\\"https://s0.bukalapak.com/images/badge/seller/xhdpi/level-6.png\\\",\\\"name\\\":\\\"Good Seller\\\"},\\\"name\\\":\\\"Popoku Indonesia\\\",\\\"premium_level\\\":\\\"platinum\\\",\\\"premium_top_seller\\\":true,\\\"rejection\\\":{\\\"recent_transactions\\\":100,\\\"rejected\\\":0},\\\"reviews\\\":{\\\"negative\\\":63,\\\"positive\\\":5380},\\\"sla\\\":{\\\"type\\\":\\\"normal\\\",\\\"value\\\":2},\\\"subscriber_amount\\\":318,\\\"term_and_condition\\\":\\\"\\\",\\\"url\\\":\\\"https://www.bukalapak.com/u/popokus\\\"},\\\"tag_pages\\\":[],\\\"updated_at\\\":\\\"2020-11-05T09:05:30Z\\\",\\\"url\\\":\\\"https://www.bukalapak.com/p/perlengkapan-bayi/diapering/1dfszww-jual-popok-bayi-tipe-celana-singgle-pads-size-xl-isi-6pcs\\\",\\\"video_url\\\":\\\"\\\",\\\"warranty\\\":{\\\"cheapest\\\":false},\\\"weight\\\":270,\\\"wholesales\\\":[],\\\"without_shipping\\\":false}\"}]",
+    "type": "json"
+  }
+}

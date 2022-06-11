@@ -1,0 +1,58 @@
+[
+    {
+        "name": "id",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "site_id",
+        "type": "INTEGER",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "hash_url",
+        "type": "STRING",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "price",
+        "type": "INTEGER",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "price_original",
+        "type": "INTEGER",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "total_sold",
+        "type": "INTEGER"
+    },
+    {
+        "name": "total_stock",
+        "type": "INTEGER"
+    },
+    {
+        "name": "total_view",
+        "type": "INTEGER"
+    },
+    {
+        "name": "is_instock",
+        "type": "BOOLEAN",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "rating",
+        "type": "FLOAT"
+    },
+    {
+        "name": "crawled_at",
+        "type": "TIMESTAMP",
+        "mode": "REQUIRED"
+    },
+    {
+        "name": "created_at",
+        "type": "TIMESTAMP",
+        "mode": "REQUIRED"
+    }
+]

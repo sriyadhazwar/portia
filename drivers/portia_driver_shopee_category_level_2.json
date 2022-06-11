@@ -1,0 +1,194 @@
+{
+    "_id": "5f8697fc1bc47392d0380341",
+    "site_id": 507,
+    "name": "Shopee - Category",
+    "url": "https://shopee.co.id/",
+    "type": "api",
+    "use_cookie": true,
+    "use_proxy": true,
+    "proxy": {
+        "host": "157.230.42.174",
+        "port": "8088",
+        "auth": "portia:f3df98ea80ee0f6dacf42b77"
+    },
+    "deep_crawl": true,
+    "headers": {
+        "accept": "application/json",
+        "accept-encoding": "gzip, deflate, br",
+        "accept-language": "en-GB,en-US;q=0.9,en;q=0.8,id;q=0.7,ms;q=0.6,su;q=0.5",
+        "content-type": "application/json",
+        "referer": "https://www.google.com/",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "Windows",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
+        "x-api-source": "pc",
+        "x-requested-with": "XMLHttpRequest",
+        "x-shopee-language": "id"
+    },
+    "use_lazy": false,
+    "definition": {
+        "entry_point": {
+            "type": "api",
+            "api": {
+                "name": "CONTENT_PRODUCT",
+                "url": "https://shopee.co.id/api/v4/search/search_items?by=relevancy&order=desc&page_type=search&scenario=PAGE_OTHERS&version=2&rating_filter=4&limit={{PAGE_SIZE}}&match_id={{CATEGORY_ID}}&newest={{PAGE_OFFSET}}&price_min={{PRICE_MIN}}&price_max={{PRICE_MAX}}",
+                "method": "GET",
+                "headers": null,
+                "value": {
+                    "path": "$.items.*",
+                    "format": "https://shopee.co.id/{{PRODUCT_NAME_SLUGIFY}}-i.{{SHOP_ID}}.{{PRODUCT_ID}}",
+                    "save_content": true,
+                    "vars": {
+                        "PRODUCT_NAME_SLUGIFY": "$.item_basic.name",
+                        "SHOP_ID": "$.shopid",
+                        "PRODUCT_ID": "$.itemid"
+                    }
+                }
+            },
+            "page_max": 100,
+            "throttle": 2000,
+            "product_count_path": "$.total_count",
+            "deep_crawl": {
+                "price_min": 1,
+                "price_max": 0,
+                "price_increment": 20000000,
+                "batch_threshold": 5000,
+                "minimum_price_range": 10,
+                "product_count_path": "$.total_count"
+            }
+        },
+        "product": {
+            "type": "api",
+            "api": []
+        },
+        "product_map": [
+            {
+                "name": "title",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.item_basic.name"
+            },
+            {
+                "name": "brand",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.item_basic.brand"
+            },
+            {
+                "name": "price",
+                "type": "number",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.item_basic.price",
+                "value": "{{VALUE}}/100000"
+            },
+            {
+                "name": "price_original",
+                "type": "number",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.item_basic.price_before_discount",
+                "value": "{{VALUE}}/100000"
+            },
+            {
+                "name": "breadcrumb",
+                "type": "array",
+                "default": [
+                    "DEFAULT_BREADCRUMB"
+                ]
+            },
+            {
+                "name": "breadcrumb_id",
+                "type": "number",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.item_basic.catid"
+            },
+            {
+                "name": "image_primary",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.item_basic.images[0]",
+                "value": "https://cf.shopee.co.id/file/{{VALUE}}"
+            },
+            {
+                "name": "total_sold",
+                "type": "number",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.item_basic.historical_sold"
+            },
+            {
+                "name": "total_sold_2",
+                "type": "number",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.item_basic.sold"
+            },
+            {
+                "name": "total_stock",
+                "type": "number",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.item_basic.stock"
+            },
+            {
+                "name": "total_review",
+                "type": "number",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.item_basic.cmt_count"
+            },
+            {
+                "name": "rating",
+                "type": "decimal",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.item_basic.item_rating.rating_star"
+            },
+            {
+                "name": "seller_location",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.item_basic.shop_location"
+            },
+            {
+                "name": "seller_is_official",
+                "type": "boolean",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.item_basic.is_official_shop"
+            },
+            {
+                "name": "seller_code",
+                "type": "number",
+                "source": "CONTENT_PRODUCT",
+                "path": "$.item_basic.shopid"
+            }
+        ],
+        "vars": [
+            {
+                "name": "CATEGORY_ID",
+                "type": "regex",
+                "input": "{{URL}}",
+                "value": "shopee\\.co\\.id.*\\.(\\d+)",
+                "args": {
+                    "group": 1
+                }
+            },
+            {
+                "name": "PAGE_SIZE",
+                "type": "constant",
+                "value": 60
+            },
+            {
+                "name": "STORE_ID",
+                "type": "regex",
+                "input": "{{URL_PRODUCT}}",
+                "value": "shopee\\.co\\.id.*-i\\.(\\d*)\\.\\d*",
+                "args": {
+                    "group": 1
+                }
+            },
+            {
+                "name": "PRODUCT_ID",
+                "type": "regex",
+                "input": "{{URL_PRODUCT}}",
+                "value": "shopee\\.co\\.id.*-i\\.\\d*\\.(\\d*)",
+                "args": {
+                    "group": 1
+                }
+            }
+        ]
+    }
+}

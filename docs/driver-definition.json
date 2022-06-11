@@ -1,0 +1,30 @@
+{
+  "entry_point": {
+  	"type": "api",
+    "api": {
+      "url": "https://shopee.co.id/api/v2/search_items?page_type=search&by=relevancy&match_id={{CATEGORY_ID}}&limit={{PAGE_SIZE}}&newest={{PAGE_OFFSET}}&version=2&order=desc",
+      "method": "GET",
+      "header": "{\r\n  \"Accept-Charset\": \"ISO-8859-1,utf-8;q=0.7,*;q=0.7\",\r\n  \"Accept\": \"*/*\",\r\n  \"Cache-Control\": \"no-cache\",\r\n  \"User-Agent\": \"Telunjukbot/1.0; https://www.telunjuk.com/about\",\r\n  \"Accept-Encoding\": \"gzip, deflate, br\",\r\n  \"Accept-Language\": \"en-GB,en-US;q=0.9,en;q=0.8,id;q=0.7,ms;q=0.6,su;q=0.5\"\r\n}",
+      "value": {
+        "query": "$.items.*",
+        "format": "https://shopee.co.id/{{PRODUCT_NAME}}-i.{{SHOP_ID}}.{{PRODUCT_ID}}",
+        "vars": {
+          "PRODUCT_NAME": "$.name",
+          "SHOP_ID": "$.shopid",
+          "PRODUCT_ID": "$.itemid"
+        }
+      }
+    }
+  },
+  "vars": [
+    {
+      "name": "CATEGORY_ID",
+      "type": "REGEX",
+      "input": "{{URL}}",
+      "value": "/shopee.co.id/.?.\\d.(\\d*)/g",
+      "args": {
+        "group": 1
+      }
+    }
+  ]
+}
