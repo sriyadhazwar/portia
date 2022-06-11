@@ -1,0 +1,459 @@
+<!-- main section -->
+<main class="main-container">
+  <!-- page content -->
+  <section style="padding: 16px 24px">
+    <div>
+      <h3 class="pb-4">Driver: Ubah</h3>
+      <form class="formupdate">
+        {{!-- Basic driver information --}}
+        <div class="card my-3">
+          <h5 class="card-header">Basic Information</h5>
+          <div class="card-body">
+            <div class="form-group">
+              <label for="">Website name</label>
+              <input type="text" id="name" name="name" class="form-control" placeholder="Website name identifier" required>
+              <small class="form-text text-muted">Example lazada-driver-sitemap</small>
+            </div>
+            <div class="form-group">
+              <label for="">Website url</label>
+              <input type="text" id="url"  name="url" class="form-control" placeholder="Website url" required>
+              <small class="form-text text-muted">Example https://www.lazada.co.id</small>
+            </div>
+          </div>
+        </div>
+        {{!-- End basic driver information --}}
+
+        {{!-- Load strategy --}}
+        <div class="card my-3">
+          <h5 class="card-header">HTTP Request Configuration</h5>
+          <div class="card-body">
+            <div style="padding: 0 24px" class="custom-control form-control-lg custom-checkbox">
+              <input type="checkbox" class="custom-control-input" name="use_proxy" id="use_proxy" value="false">
+              <label class="custom-control-label" style="padding-top: 11px; padding-left: 8px; font-size: 16px"
+                for="use_proxy">Use Proxy Server</label>
+            </div>
+            <div class="form-group">
+              <input type="text" id="proxy_credential" name="proxy_credential" class="form-control" placeholder="Proxy credentials">
+              <small class="form-text text-muted">Required if proxy is enabled. Ex http://foo:bar@proxy:80</small>
+            </div>
+
+            <div class="form-group">
+              <label>Custom User Agent</label>
+              <input type="text" id="user_agent" name="user_agent" class="form-control" placeholder="Custom user agent">
+              <small class="form-text text-muted">
+                Ex Googlebot/2.1 (+http://www.google.com/bot.html).
+                You can see list of user agent <a href="https://developers.whatismybrowser.com/useragents/explore/" target="_blank">https://developers.whatismybrowser.com/</a>.
+                If you leave this value to blank we will pick a random user agent for you.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label>Custom HTTP Request Header</label>
+              <textarea id="headers" name="headers" class="form-control" rows="5" placeholder="Custom http request header"></textarea>
+              <small class="form-text text-muted">Please see example bellow:</small>
+              <pre>
+{
+  "accept-language": "en-US,en;q=0.9,id;q=0.8",
+  "cache-control": "max-age=0",
+  "sec-fetch-dest": "document",
+  "sec-fetch-mode": "navigate",
+  "sec-fetch-site": "none",
+  "sec-fetch-user": "?1",
+  "upgrade-insecure-requests": "1"
+}
+              </pre>
+            </div>
+
+          </div>
+        </div>
+        {{!-- End load strategy --}}
+
+
+        <div class="card my-3">
+          <h5 class="card-header">Source Product URL</h5>
+          <div class="card-body">
+            {{!-- Source data product url --}}
+            <label for="exampleInputEmail1">Type</label>
+            <div class="row">
+              <div class="col">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="type" id="js" value="js" checked>
+                  <label class="form-check-label" style="padding-left: 10px; padding-top: 2px" for="js">
+                    Use Js Rendering
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="type" id="server" value="server">
+                  <label class="form-check-label" style="padding-left: 10px; padding-top: 2px" for="server">
+                    Use Server Rendering
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="type" id="sitemap" value="sitemap">
+                  <label class="form-check-label" style="padding-left: 10px; padding-top: 2px" for="sitemap">
+                    Use Sitemap
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="type" id="api" value="api">
+                  <label class="form-check-label" style="padding-left: 10px; padding-top: 2px" for="api">
+                    Use API
+                  </label>
+                </div>
+              </div>
+              <div class="col">
+                <div id="use_lazy_class" class="form-group form-check">
+                  <input type="checkbox" class="form-check-input" name="use_lazy" id="use_lazy_label" value="false">
+                  <label class="form-check-label" for="use_lazy_label">Use Lazy Load</label>
+                </div>
+              </div>
+            </div>
+            {{!-- End source data product url --}}
+
+            {{!-- sitemap type --}}
+            <div id="sitemapObject" class="pb-4 pt-3">
+              <div class="pb-2 mb-3 border-bottom">Sitemap Http Request</div>
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Sitemap URL</label>
+                <div class="col-sm-9">
+                  <input type="text"
+                    id="sitemapUrl"
+                    name="definition[sitemap][url]"
+                    class="form-control"
+                    placeholder="Sitemap url, example : https://www.lazada.co.id/sitemap.xml">
+                 </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">String pattern</label>
+                <div class="col-sm-9">
+                  <input type="text" id="sitemapPattern" name="definition[sitemap][pattern]"
+                    class="form-control" placeholder="Sitemap pattern">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Enable throttle</label>
+                <div class="col-sm-9">
+                  <select id="sitemapThrottle" name="definition[sitemap][throttle]" class="form-control">
+                    <option value="" disabled selected>Select Throttle In Minute</option>
+                    <option value="0">Disabled throttle</option>
+                    <option value="3">3 minutes</option>
+                    <option value="5">5 minutes</option>
+                    <option value="10">10 minutes</option>
+                    <option value="15">15 minutes</option>
+                    <option value="20">20 minutes</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            {{!-- end sitemap type --}}
+
+            {{!-- api type --}}
+            <div id="apiObject" class="pb-4 pt-3">
+              <div class="pb-2 mb-3 border-bottom">API Http Request</div>
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Navigation argument</label>
+                <div class="col-sm-9">
+                  <input type="text"
+                    id="apiArgument"
+                    name="definition[api][argument]"
+                    class="form-control"
+                    placeholder="Url signature, example : ?page={page}&ajax=true">
+                  <small class="form-text text-muted">Ex ?page={page}&ajax=true</small>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Page information</label>
+                <div class="col-sm-9">
+                  <div class="row">
+                    <div class="col">
+                      <div class="form-group">
+                        <input type="text"
+                          id="apiCurrentPage"
+                          name="definition[api][current_page]"
+                          class="form-control"
+                          placeholder="Current page json path">
+                        <small class="form-text text-muted">Current page json path</small>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="form-group">
+                        <input type="text"
+                          id="apiTotalPage"
+                          name="definition[api][total_page]"
+                          class="form-control"
+                          placeholder="Current page json path">
+                        <small class="form-text text-muted">Total page json path</small>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="form-group">
+                        <input type="text"
+                          id="apiTotalPageSize"
+                          name="definition[api][total_page_size]"
+                          class="form-control"
+                          placeholder="Current page json path">
+                        <small class="form-text text-muted">Total current page size</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+               <div class="form-group row">
+                <label class="col-sm-3 col-form-label">URL JSON Path</label>
+                <div class="col-sm-9">
+                  <input type="text"
+                    id="apiUrl"
+                    name="definition[api][url]"
+                    class="form-control"
+                    placeholder="Url json path">
+                  <small class="form-text text-muted">Ex mods.listItems[..].productUrl</small>
+                </div>
+              </div>
+            </div>
+            {{!-- end api type --}}
+
+            {{!-- rendering --}}
+            <div id="products" class="pb-4 pt-3">
+               <div class="pb-2 mb-3 border-bottom">Rendering Request</div>
+               <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Behaviour navigation</label>
+                <div class="col-sm-9">
+                  <select class="form-control" id="navigationEvent" class="" name="definition[products][navigation][event]">
+                    <option value=""></option>
+                    <option value="click">Click page to navigate</option>
+                    <option value="visit">Http request visit</option>
+                  </select>
+                  <small class="form-text text-muted">Ex ?page={page}&ajax=true</small>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Path navigation selector</label>
+                <div class="col-sm-9">
+                  <input type="text" id="navigationSelector" name="definition[products][navigation][selector]"
+                  class="form-control" placeholder="Navigation path, ex: #main-shopee-page-cont button">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Navigating use</label>
+                <div class="col-sm-9">
+                  <select name="definition[products][navigation][type]" class="form-control" id="navigationType">
+                    <option value=""></option>
+                    <option value="next">Use next button</option>
+                    <option value="navigation">Use page navigation</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">DOM Product URL</label>
+                <div class="col-sm-9">
+                  <input type="text" id="productSelector" name="definition[products][product][selector]"
+                    class="form-control"
+                    placeholder="ex: #main div.col-xs-2-4.shopee-search-item-result__item">
+                </div>
+              </div>
+            </div>
+            {{!-- end rendering --}}
+          </div>
+        </div>
+
+        {{!-- produt detail --}}
+        <div class="card">
+          <h5 class="card-header">Product Detail Definition</h5>
+          <div class="card-body">
+            <div class="pb-2 mb-3 border-bottom">Fetcher Domain</div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="definition[product][rendering]" id="productjsrendering"
+                value="js" checked>
+              <label class="form-check-label" style="padding-left: 10px; padding-top: 2px" for="productjsrendering">Use
+                Js Rendering
+                <small class="text-muted d-block">We will spawn a headless chrome to rendering and download html content</small>
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="definition[product][rendering]"
+                id="productserverrendering" value="server">
+              <label class="form-check-label" style="padding-left: 10px; padding-top: 2px"
+                for="productserverrendering">
+                Use Server Rendering
+                <small class="text-muted d-block">We will use axios to rendering and download html content</small>
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="definition[product][rendering]"
+                id="productserverjsrendering" value="serverjs">
+              <label class="form-check-label" style="padding-left: 10px; padding-top: 2px"
+                for="productserverjsrendering">
+                Use Server + JS Rendering
+                <small class="text-muted d-block">We will use axios to download critical html content, and render it using headless chrome to download html content</small>
+              </label>
+            </div>
+            <div class="form-group pt-3">
+              <label for="">Throttle per minute</label>
+              <input type="number" id="thortlePerMinute" name="definition[product][throttle]" class="form-control"
+                placeholder="Thortle per minute">
+            </div>
+
+            <div class="pb-2 mb-3 border-bottom">Extractor Domain</div>
+            <div class="form-group">
+              <div class="float-right">
+                <a onclick="jsonCheck()" class="btn btn-primary btn-sm text-white">Validate JSON</a>
+              </div>
+
+              <label for="">Product DOM Definition</label>
+              <textarea
+                id="definitionProductDefinition"
+                name="definition[product][definition]"
+                rows="6"
+                class="form-control" style="resize: none"
+                oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' placeholder="Description Json"></textarea>
+              <div id="definitionProductDefinitionAlert"></div>
+            </div>
+          </div>
+        </div>
+        {{!-- end produt detail --}}
+{{!--
+
+        <div class="row">
+          <div class="col">
+            <div style="padding: 0 24px" class="custom-control form-control-lg custom-checkbox">
+              <input type="checkbox" class="custom-control-input" name="use_proxy" id="use_proxy_label" value="false">
+              <label class="custom-control-label" style="padding-top: 11px; padding-left: 8px; font-size: 16px"
+                for="use_proxy_label">Use Proxy Server</label>
+            </div>
+          </div>
+          <div class="col">
+            <div id="use_lazy_class" style="padding: 0 24px" class="custom-control form-control-lg custom-checkbox">
+              <input type="checkbox" class="custom-control-input" name="use_lazy" id="use_lazy_label" value="false">
+              <label class="custom-control-label" style="padding-top: 11px; padding-left: 8px; font-size: 16px"
+                for="use_lazy_label">Use Lazy Load</label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="type" id="js" value="js" checked>
+              <label class="form-check-label" style="padding-left: 10px; padding-top: 2px" for="js">Use Js
+                Rendering</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="type" id="server" value="server">
+              <label class="form-check-label" style="padding-left: 10px; padding-top: 2px" for="server">Use
+                Server Rendering</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="type" id="sitemap" value="sitemap">
+              <label class="form-check-label" style="padding-left: 10px; padding-top: 2px" for="sitemap">Use
+                Sitemap</label>
+            </div>
+          </div>
+        </div>
+        <div id="sitemapObject" class="pb-4 pt-3">
+          <div class="card card-body">
+            <span class="pb-2">SITEMAP</span>
+            <div class="form-group" style="margin-bottom: 12px">
+              <input type="text" id="sitemapUrl" name="definition[sitemap][url]" class="form-control form-control-sm"
+                placeholder="sitemap url">
+            </div>
+            <div class="form-group" style="margin-bottom: 12px">
+              <input type="text" id="sitemapPattern" name="definition[sitemap][pattern]"
+                class="form-control form-control-sm" placeholder="sitemap pattern">
+            </div>
+            <div class="form-group" style="margin-bottom: 12px">
+                      <select type="number" id="sitemapThrottle" name="definition[sitemap][throttle]" class="form-control form-control-sm">
+                        <option value=0 disabled selected>Select Throttle In Minute</option>
+                        <option value=0>0</option>
+                        <option value=5>5</option>
+                        <option value=10>10</option>
+                        <option value=15>15</option>
+                        <option value=20>20</option>
+                      </select>
+            </div>
+          </div>
+        </div>
+           <div id="products" class="pb-4" style="padding-top: 25px">
+            <div class="card card-body">
+              <span class="pb-3">PRODUCTS</span>
+              <span>NAVIGATION</span>
+              <div class="form-group" style="margin-bottom: 12px">
+                <input type="text" id="navigationEvent" name="definition[products][navigation][event]"
+                  class="form-control form-control-sm" placeholder="ex: click/visit">
+              </div>
+              <div class="form-group" style="margin-bottom: 12px">
+                <input type="text" id="navigationSelector" name="definition[products][navigation][selector]"
+                  class="form-control form-control-sm" placeholder="Navigation path, ex: #main-shopee-page-cont button">
+              </div>
+              <div class="form-group pb-4">
+                <input type="text" id="navigationType" name="definition[products][navigation][type]"
+                  class="form-control form-control-sm" placeholder="Trigger to navigate, next/navigation">
+              </div>
+              <span>PRODUCT</span>
+              <div class="form-group" style="margin-bottom: 0">
+                <input type="text" id="productSelector" name="definition[products][product][selector]"
+                  class="form-control form-control-sm"
+                  placeholder="ex: #main div.col-xs-2-4.shopee-search-item-result__item">
+              </div>
+            </div>
+          </div>
+        <div class="pb-4">
+          <div class="card card-body">
+            <div class="pb-3">
+              <div class="float-sm-left">
+                <span>Product Detail</span>
+              </div>
+            <div class="row">
+              <div class="col-md-10">
+                <div class="form-group">
+                  <textarea id="definitionProductDefinition"  name="definition[product][definition]" rows="6" class="form-control form-control-sm" style="resize: none" oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' placeholder="Description Json"></textarea>
+                </div>
+                <div id="definitionProductDefinitionAlert"></div>
+              </div>
+              <div class="col-md-2">
+                <a onclick="jsonCheck()" class="btn btn-primary text-white">Validate JSON</a>
+              </div>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="definition[product][rendering]" id="productjsrendering"
+                value="js" checked>
+              <label class="form-check-label" style="padding-left: 10px; padding-top: 2px" for="productjsrendering">Use
+                Js Rendering</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="definition[product][rendering]"
+                id="productserverrendering" value="server">
+              <label class="form-check-label" style="padding-left: 10px; padding-top: 2px"
+                for="productserverrendering">Use Server Rendering</label>
+            </div>
+            <div class="form-group pt-3">
+              <input type="number" id="thortlePerMinute" name="definition[product][throttle]"
+                class="form-control form-control-sm" placeholder="Thortle per minute">
+            </div>
+          </div>
+        </div> --}}
+
+        <div class="pb-5 pt-3">
+          <div class="float-sm-right">
+            <button type="submit" id="update" class="btn btn-primary">Ubah</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<script>
+  function addProductForm() {
+    $('#addProductDetail').append(`
+    <div class="row" id="productDetail">
+        <div class="col">
+            <div class="form-group" style="margin-bottom: 12px">
+            <input type="text" name="definition[product][definition][]" class="form-control form-control-sm" placeholder="insert json data">
+        </div>
+        </div>
+    </div>`);
+  }
+</script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/jquery-serialize-object/2.5.0/jquery.serialize-object.min.js"></script>
+
+<script src="/drivers/update.js"></script>

@@ -1,0 +1,77 @@
+<!-- main section -->
+<main class="main-container">
+    <!-- page content -->
+    <section class="container-fluid" style="padding: 16px 24px">
+        <div class="row">
+
+            <div class="card col-sm-4">
+                <div class="card-body">
+                    <h5 class="card-title">{{ workerCount.feeder }} Feeders</h5>
+                    <p class="card-text">{{ messageCount.feeder }} Messages</p>
+                    <a onclick="increaseFeeder()" name="feeder" class="btn btn-primary">Increase</a>
+                </div>
+            </div>
+
+            <div class="card col-sm-4">
+                <div class="card-body">
+                    <h5 class="card-title">{{ workerCount.fetcher }} Fetcher</h5>
+                    <p class="card-text"> {{ messageCount.fetcher }} Messages</p>
+                    <a onclick="increaseFetcher()" name="fetcher" class="btn btn-primary">Increase</a>
+                </div>
+            </div>
+
+            <div class="card col-sm-4">
+                <div class="card-body">
+                    <h5 class="card-title">{{ workerCount.extractor }} Extractor</h5>
+                    <p class="card-text"> {{ messageCount.extractor }} Messages</p>
+                    <a onclick="increaseExtractor()" name="extractor" class="btn btn-primary">Increase</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    <!-- TODO: menu masukin ke layout -->
+    <!-- TODO: Tombol increase ditekan kirim ajax ke feeder-worker dkk -->
+    <!-- TODO: Periodically tembak /info dan update information queue + feeder -->
+</main>
+
+<script>
+
+    async function increaseFeeder() {
+        await sendData("feeder");
+    }
+
+    async function increaseFetcher() {
+        await sendData("fetcher");
+    }
+
+    async function increaseExtractor() {
+        await sendData("extractor");
+    }
+
+    async function sendData(name) {
+        var data = { name: name };
+        var resp = await $.ajax({
+            url: "/api/dashboard/increase-worker",
+            type: "POST",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function () {
+            }
+        });
+
+        if (resp.success == true) {
+            alert(`Sukses menambah ${name} !`)
+            location.reload();
+        }
+        else {
+            alert(`Silahkan coba lagi !`)
+        }
+    }
+
+    //refresh page every 5 minutes
+    setTimeout(function () {
+        location.reload();
+    }, 5 * 60 * 1000);
+</script>

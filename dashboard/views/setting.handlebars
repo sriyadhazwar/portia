@@ -1,0 +1,47 @@
+<!-- main section -->
+<main class="main-container">
+    <!-- page content -->
+    <section style="padding: 16px 24px">
+        <div class="pb-5">
+            <h3>Setting</h3>
+        </div>
+    </section>
+
+    <section style="padding: 16px 24px">
+        <div class="pb-5">
+
+            {{#if showAlert}}
+            <div class="alert {{alertClass}}" role="alert">
+                {{alertMessage}}
+            </div>
+            {{/if}}
+
+            <form method="post">
+
+                <div class="form-group">
+                    <label for="feeder">Feeder's Max Job Per Worker</label>
+                    <input type="number" class="form-control" id="feeder" name="feeder" value="{{feeder}}"
+                        aria-describedby="feederHelp" placeholder="Enter Max Job">
+                    <small id="feederHelp" class="form-text text-muted">Maximum job per worker for feeder.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="fetcher">Fetcher's Max Job Per Worker</label>
+                    <input type="number" class="form-control" id="fetcher" name="fetcher" value="{{fetcher}}"
+                        aria-describedby="fetcherHelp" placeholder="Enter Max Job">
+                    <small id="fetcherHelp" class="form-text text-muted">Maximum job per worker for fetcher.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="extractor">Extractor's Max Job Per Worker</label>
+                    <input type="number" class="form-control" id="extractor" name="extractor" value="{{extractor}}"
+                        aria-describedby="extractorHelp" placeholder="Enter Max Job">
+                    <small id="extractorHelp" class="form-text text-muted">Maximum job per worker for
+                        extractor.</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+    </section>
+</main>

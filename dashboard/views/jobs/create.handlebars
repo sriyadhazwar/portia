@@ -1,0 +1,43 @@
+<!-- main section -->
+<main class="main-container">
+    <!-- page content -->
+    <section style="padding: 16px 24px">
+        <div class="pb-5">
+            <h3>Job</h3>
+        </div>
+    </section>
+
+    <section style="padding: 16px 24px">
+        <div class="pb-5">
+            <form method="post" action="/job">
+
+                <div class="form-group">
+                    <label for="name">Job Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{name}}"
+                        aria-describedby="nameHelp" placeholder="Name">
+                    <small id="nameHelp" class="form-text text-muted">Name</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="driver_id">Driver</label>
+                    <select class="form-control" id="driver_id" name="driver_id" value="{{driver_id}}"
+                        aria-describedby="driver_idHelp" placeholder="Driver">
+                        {{#each driverMapping.name}}
+                        <option value="{{@key}}">{{this}}</option>
+                        {{/each}}
+                    </select>
+                    <small id="driver_idHelp" class="form-text text-muted">Driver</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="url">URL</label>
+                    <input type="text" class="form-control" id="url" name="url" value="{{url}}"
+                        aria-describedby="urlHelp" placeholder="URL">
+                    <small id="urlHelp" class="form-text text-muted">URL</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+    </section>
+</main>
