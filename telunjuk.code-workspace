@@ -1,0 +1,33 @@
+{
+  "folders": [
+    {
+      "path": "dashboard"
+    },
+    {
+      "path": "manager"
+    },
+    {
+      "path": "worker-extractor"
+    },
+    {
+      "path": "worker-feeder"
+    },
+    {
+      "path": "worker-fetcher"
+    },
+    {
+      "path": "infrastructure"
+    },
+    {
+      "path": "docs"
+    }
+  ],
+  "settings": {
+    "DockerRun.DisableDockerrc": true,
+    "DockerRun.Containers": [
+      "a602fcf74a6d",
+      "0352d3e0a88d"
+    ],
+    "liveServer.settings.multiRootWorkspaceName": "dashboard"
+  }
+}

@@ -1,0 +1,15 @@
+#PIPELINE
+
+include:
+  - local: '/.gitlab-ci/format.yml'
+  - local: '/.gitlab-ci/release.yml'
+
+stages:
+- format
+- release
+
+cache:
+  paths:
+    - dashboard/node_modules
+    - worker-feeder/node_modules
+    - worker-fetcher/node_modules
